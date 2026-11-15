@@ -1,36 +1,31 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import { ToastProvider } from "@/components/ui/Toast";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
 });
 
 export const metadata = {
-  title: "SehatPedia — Portal Web Edukasi Kesehatan",
+  title: {
+    default: "Portal Kesehatan Puskesmas Banjar Agung",
+    template: "%s — Puskesmas Banjar Agung",
+  },
   description:
-    "Platform edukasi kesehatan masyarakat mengenai gizi, kesehatan mental, aktivitas fisik, dan pencegahan penyakit berbasis bukti medis.",
+    "Portal Kesehatan Puskesmas Banjar Agung: jurnal kesehatan, jadwal dokter, dan jadwal kegiatan dalam satu tempat.",
+};
+
+export const viewport = {
+  themeColor: "#14532d",
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html
-      lang="id"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="flex min-h-full flex-col bg-slate-50 text-slate-900">
-        <Navbar />
-        <main className="flex-1">{children}</main>
-        <Footer />
+    <html lang="id" className={`${inter.variable} h-full antialiased`}>
+      <body className="min-h-full">
+        <ToastProvider>{children}</ToastProvider>
       </body>
     </html>
   );
 }
-

@@ -1,19 +1,35 @@
 @import "tailwindcss";
 
-:root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
+/*
+ * Design tokens — diambil dari PRD Bagian 9 (Panduan Desain Figma).
+ * Pakai sebagai kelas Tailwind: bg-brand-900, text-muted, border-line, dst.
+ */
+@theme inline {
+  --color-brand-900: #14532d; /* Hijau tua: sidebar, panel login, banner, heading */
+  --color-brand-800: #17603a;
+  --color-brand-700: #1f6b4a; /* Hijau primary: tombol, menu aktif, garis kartu */
+  --color-brand-600: #2a7d58;
+  --color-brand-100: #cfeadf;
+  --color-brand-50: #e3f4ee; /* Accent: badge, header tabel */
+  --color-page: #f0f5f2; /* Latar halaman */
+  --color-muted: #5f6f68; /* Teks sekunder */
+  --color-line: #d9e5df; /* Border input & kartu */
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+html,
+body {
+  background: var(--color-page);
+  color: #1b2b24;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+}
+
+/* Fokus keyboard yang jelas (PRD 8 — Aksesibilitas) */
+:focus-visible {
+  outline: 2px solid var(--color-brand-700);
+  outline-offset: 2px;
 }
