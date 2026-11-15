@@ -1,6 +1,5 @@
 /**
- * Autentikasi mock (PRD 6.1). Sesi disimpan di localStorage.
- * Ganti dengan NextAuth / Supabase Auth saat backend tersedia.
+ * Autentikasi Terintegrasi Backend (`/api/auth/login` -> Supabase PostgreSQL).
  */
 import { createStore } from "@/lib/createStore";
 import { dataStore, useData } from "@/services/dataService";
@@ -8,7 +7,7 @@ import { dataStore, useData } from "@/services/dataService";
 const MAX_ATTEMPTS = 5; // AUTH-7
 const LOCK_MINUTES = 15;
 
-const sessionStore = createStore("pbag-session-v1", () => ({ userId: null }));
+const sessionStore = createStore("pbag-session-v1", () => ({ userId: null, user: null }));
 const attemptStore = createStore("pbag-login-attempts-v1", () => ({}));
 
 export const ROLE_HOME = {
@@ -28,11 +27,12 @@ export function useAuth() {
   const session = sessionStore.useStore();
   const data = useData();
   if (session === undefined || data === undefined) return { ready: false, user: null };
-  const user = data.users.find((u) => u.id === session.userId) || null;
+  const user =
+    data.users.find((u) => u.id === session.userId) || session.user || null;
   return { ready: true, user };
 }
 
-export function login(email, password) {
+export async function login(email, password) {
   const key = email.trim().toLowerCase();
   const attempts = attemptStore.getState();
   const record = attempts[key] || { count: 0, lockedUntil: 0 };
@@ -42,13 +42,38 @@ export function login(email, password) {
     return { ok: false, error: `Terlalu banyak percobaan. Coba lagi dalam ${menit} menit.` };
   }
 
-  const user = dataStore.getState().users.find((u) => u.email.toLowerCase() === key);
-  if (!user || user.password !== password) {
+  let matchedUser = null;
+
+  // 1. Verifikasi ke Backend API (/api/auth/login -> Supabase Cloud)
+  try {
+    const res = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: key, password }),
+    });
+    const json = await res.json();
+    if (res.ok && json.ok && json.user) {
+      matchedUser = json.user;
+    }
+  } catch {
+    // Fallback ke pengecekan lokal bila sedang offline
+    const localUser = dataStore
+      .getState()
+      .users.find((u) => u.email.toLowerCase() === key);
+    if (localUser && (localUser.password === password || localUser.password_hash === password)) {
+      matchedUser = localUser;
+    }
+  }
+
+  if (!matchedUser) {
     const count = record.count + 1;
     const locked = count >= MAX_ATTEMPTS;
     attemptStore.setState({
       ...attempts,
-      [key]: { count: locked ? 0 : count, lockedUntil: locked ? Date.now() + LOCK_MINUTES * 60000 : 0 },
+      [key]: {
+        count: locked ? 0 : count,
+        lockedUntil: locked ? Date.now() + LOCK_MINUTES * 60000 : 0,
+      },
     });
     return {
       ok: false,
@@ -61,19 +86,17 @@ export function login(email, password) {
   const rest = { ...attempts };
   delete rest[key];
   attemptStore.setState(rest);
-  sessionStore.setState({ userId: user.id });
-  return { ok: true, user };
+  sessionStore.setState({ userId: matchedUser.id, user: matchedUser });
+  return { ok: true, user: matchedUser };
 }
 
 export function logout() {
-  sessionStore.setState({ userId: null });
+  sessionStore.setState({ userId: null, user: null });
 }
 
-/** AUTH-4 (mock): di backend asli kirim email berisi tautan reset. */
 export function requestPasswordReset(email) {
   const exists = dataStore
     .getState()
     .users.some((u) => u.email.toLowerCase() === email.trim().toLowerCase());
   return { ok: true, exists };
 }
-

@@ -40,11 +40,11 @@ export default function LoginForm() {
     return Object.keys(next).length === 0;
   };
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
     setSubmitting(true);
-    const res = login(values.email, values.password);
+    const res = await login(values.email, values.password);
     setSubmitting(false);
     if (!res.ok) {
       setFormError(res.error);
