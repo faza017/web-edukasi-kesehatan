@@ -45,7 +45,11 @@ export default function LoginForm() {
   const [mode, setMode] = useState("login"); // "login" | "register"
   const [values, setValues] = useState({ nama: "", email: "", password: "" });
   const [errors, setErrors] = useState({});
-  const [formError, setFormError] = useState("");
+  const [formError, setFormError] = useState(() => {
+    if (typeof window === "undefined") return "";
+    const errDesc = new URLSearchParams(window.location.search).get("error_description");
+    return errDesc ? `Google OAuth gagal: ${errDesc}` : "";
+  });
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
@@ -54,15 +58,6 @@ export default function LoginForm() {
   useEffect(() => {
     if (ready && user) router.replace(ROLE_HOME[user.peran]);
   }, [ready, user, router]);
-
-  // Tampilkan pesan error jika redirect dari Google OAuth gagal
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const errDesc = params.get("error_description");
-    if (errDesc) {
-      setFormError(`Google OAuth gagal: ${errDesc}`);
-    }
-  }, []);
 
   const onChange = (e) => {
     setValues((v) => ({ ...v, [e.target.name]: e.target.value }));
