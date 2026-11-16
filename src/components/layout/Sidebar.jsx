@@ -39,13 +39,13 @@ export const NAV = {
 export function Brand({ subtitle, className }) {
   return (
     <div className={className}>
-      <div className="inline-flex items-center rounded-xl bg-white px-2.5 py-1.5 shadow-sm">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/logo.png"
-          alt="Portal Kesehatan Puskesmas Banjar Agung"
-          className="h-9 w-auto object-contain"
-        />
+      <div className="flex items-start gap-2 text-white">
+        <span className="mt-0.5 text-lg font-black leading-none">✚</span>
+        <span className="text-base font-bold leading-tight">
+          Puskesmas
+          <br />
+          Banjar Agung
+        </span>
       </div>
       {subtitle && (
         <p className="mt-3 text-[10px] font-semibold tracking-wide text-white/80">{subtitle}</p>

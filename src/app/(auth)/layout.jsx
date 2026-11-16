@@ -5,13 +5,8 @@ export default function AuthLayout({ children }) {
   return (
     <div className="flex min-h-screen flex-col bg-page lg:flex-row">
       <section className="relative flex flex-col bg-brand-900 px-6 py-8 text-white sm:px-10 lg:min-h-screen lg:w-[43%] lg:max-w-[520px] lg:rounded-r-2xl lg:px-10 lg:py-12">
-        <div className="inline-flex self-start rounded-xl bg-white px-3 py-2 shadow-sm">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/logo.png"
-            alt="Portal Kesehatan Puskesmas Banjar Agung"
-            className="h-11 w-auto object-contain"
-          />
+        <div className="flex items-center gap-2.5 text-lg font-bold">
+          <span className="text-xl font-black">✚</span> Puskesmas Banjar Agung
         </div>
 
         <div className="mt-8 lg:mt-auto lg:mb-auto">
