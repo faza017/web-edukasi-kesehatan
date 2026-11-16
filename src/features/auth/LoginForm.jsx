@@ -3,9 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff } from "lucide-react";
-import Button from "@/components/ui/Button";
-import { Field, Input } from "@/components/ui/Form";
+import { Eye, EyeOff, Lock, Mail, User } from "lucide-react";
 import {
   ROLE_HOME,
   login,
@@ -17,7 +15,7 @@ import { isValidEmail } from "@/lib/utils";
 
 function GoogleIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+    <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
       <path
         fill="#4285F4"
         d="M23.49 12.27c0-.79-.07-1.54-.19-2.27H12v4.51h6.47c-.29 1.48-1.14 2.73-2.4 3.58v3h3.86c2.26-2.09 3.56-5.17 3.56-8.82Z"
@@ -38,7 +36,20 @@ function GoogleIcon() {
   );
 }
 
-/** Frame 01 — Login & Registrasi Email Asli / Google OAuth (PRD AUTH-1 s/d AUTH-7). */
+function ShieldCrossIcon() {
+  return (
+    <svg width="48" height="52" viewBox="0 0 48 52" fill="none" aria-hidden="true">
+      <path
+        d="M24 2L6 9.5V24.5C6 36.4 13.7 46.9 24 50C34.3 46.9 42 36.4 42 24.5V9.5L24 2Z"
+        fill="#165B3C"
+      />
+      <rect x="21" y="15" width="6" height="20" rx="2" fill="#FFFFFF" />
+      <rect x="14" y="22" width="20" height="6" rx="2" fill="#FFFFFF" />
+    </svg>
+  );
+}
+
+/** Frame 01 — Login & Registrasi sesuai desain terbaru. */
 export default function LoginForm() {
   const router = useRouter();
   const { ready, user } = useAuth();
@@ -124,70 +135,104 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="w-full max-w-[520px]">
-      <div className="rounded-2xl bg-white px-6 py-10 shadow-sm sm:px-10 sm:py-12">
-        <h1 className="text-2xl font-bold text-brand-900">
-          {mode === "register" ? "Daftar akun baru" : "Selamat datang kembali"}
-        </h1>
-        <p className="mt-2 text-[13px] text-muted">
-          {mode === "register"
-            ? "Gunakan email aktif atau akun Google Anda untuk mengakses portal."
-            : "Masuk untuk melanjutkan ke akun Anda."}
-        </p>
+    <div className="w-full max-w-[460px]">
+      <div className="rounded-3xl bg-white px-7 py-9 shadow-[0_12px_40px_-12px_rgba(20,83,45,0.12)] sm:px-10 sm:py-10">
+        {/* Ikon Perisai Medis & Judul */}
+        <div className="flex flex-col items-center text-center">
+          <ShieldCrossIcon />
+          <h1 className="mt-3.5 text-2xl font-bold text-[#145336] sm:text-[26px]">
+            {mode === "register" ? "Daftar akun baru" : "Selamat datang kembali"}
+          </h1>
+          <p className="mt-1.5 text-xs text-muted sm:text-[13px]">
+            {mode === "register"
+              ? "Gunakan email aktif atau akun Google Anda."
+              : "Masuk untuk melanjutkan ke akun Anda."}
+          </p>
+        </div>
 
-        {/* Tombol Masuk / Daftar dengan Google */}
+        {/* Tombol Lanjutkan dengan Google */}
         <div className="mt-6">
           <button
             type="button"
             onClick={onGoogleClick}
             disabled={googleLoading || submitting}
-            className="flex h-[42px] w-full items-center justify-center gap-2.5 rounded-lg border border-line bg-white px-4 text-xs font-semibold text-brand-900 transition-colors hover:bg-brand-50 disabled:opacity-60"
+            className="flex h-11 w-full items-center justify-center gap-2.5 rounded-xl border border-line bg-white px-4 text-xs font-semibold text-slate-700 transition-colors hover:bg-brand-50/60 disabled:opacity-60 sm:text-[13px]"
           >
             <GoogleIcon />
-            {googleLoading ? "Menghubungkan ke Google..." : "Lanjutkan dengan Akun Google"}
+            {googleLoading ? "Menghubungkan ke Google..." : "Lanjutkan dengan Google"}
           </button>
         </div>
 
+        {/* Pemisah "atau" */}
         <div className="my-5 flex items-center gap-3">
           <span className="h-px flex-1 bg-line" />
-          <span className="text-[11px] text-muted">atau dengan email</span>
+          <span className="text-[11px] text-muted">atau</span>
           <span className="h-px flex-1 bg-line" />
         </div>
 
         <form onSubmit={onSubmit} noValidate className="space-y-4">
           {mode === "register" && (
-            <Field label="Nama Lengkap" htmlFor="nama" error={errors.nama}>
-              <Input
-                id="nama"
-                name="nama"
-                type="text"
-                autoComplete="name"
-                placeholder="Masukkan nama lengkap Anda"
-                value={values.nama}
-                onChange={onChange}
-                error={errors.nama}
-                aria-describedby={errors.nama ? "nama-error" : undefined}
-              />
-            </Field>
+            <div>
+              <label htmlFor="nama" className="mb-1.5 block text-xs font-semibold text-slate-700">
+                Nama Lengkap
+              </label>
+              <div className="relative">
+                <span className="pointer-events-none absolute inset-y-0 left-0 flex w-10 items-center justify-center text-muted">
+                  <User size={16} />
+                </span>
+                <input
+                  id="nama"
+                  name="nama"
+                  type="text"
+                  autoComplete="name"
+                  placeholder="Masukkan nama lengkap"
+                  value={values.nama}
+                  onChange={onChange}
+                  className={`h-11 w-full rounded-xl border bg-[#f9fbfa] pr-3.5 pl-10 text-sm text-slate-800 placeholder:text-slate-400 focus:border-brand-700 focus:bg-white focus:outline-none ${
+                    errors.nama ? "border-red-400" : "border-line"
+                  }`}
+                />
+              </div>
+              {errors.nama && <p className="mt-1 text-xs text-red-600">{errors.nama}</p>}
+            </div>
           )}
 
-          <Field label="Email" htmlFor="email" error={errors.email}>
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              autoComplete="email"
-              placeholder="nama@gmail.com"
-              value={values.email}
-              onChange={onChange}
-              error={errors.email}
-              aria-describedby={errors.email ? "email-error" : undefined}
-            />
-          </Field>
-
-          <Field label="Password" htmlFor="password" error={errors.password}>
+          <div>
+            <label htmlFor="email" className="mb-1.5 block text-xs font-semibold text-slate-700">
+              Email
+            </label>
             <div className="relative">
-              <Input
+              <span className="pointer-events-none absolute inset-y-0 left-0 flex w-10 items-center justify-center text-muted">
+                <Mail size={16} />
+              </span>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                placeholder="nama@email.com"
+                value={values.email}
+                onChange={onChange}
+                className={`h-11 w-full rounded-xl border bg-[#f9fbfa] pr-3.5 pl-10 text-sm text-slate-800 placeholder:text-slate-400 focus:border-brand-700 focus:bg-white focus:outline-none ${
+                  errors.email ? "border-red-400" : "border-line"
+                }`}
+              />
+            </div>
+            {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email}</p>}
+          </div>
+
+          <div>
+            <label
+              htmlFor="password"
+              className="mb-1.5 block text-xs font-semibold text-slate-700"
+            >
+              Password
+            </label>
+            <div className="relative">
+              <span className="pointer-events-none absolute inset-y-0 left-0 flex w-10 items-center justify-center text-muted">
+                <Lock size={16} />
+              </span>
+              <input
                 id="password"
                 name="password"
                 type={showPassword ? "text" : "password"}
@@ -195,9 +240,9 @@ export default function LoginForm() {
                 placeholder={mode === "register" ? "Minimal 6 karakter" : "Masukkan password"}
                 value={values.password}
                 onChange={onChange}
-                error={errors.password}
-                className="pr-11"
-                aria-describedby={errors.password ? "password-error" : undefined}
+                className={`h-11 w-full rounded-xl border bg-[#f9fbfa] pr-11 pl-10 text-sm text-slate-800 placeholder:text-slate-400 focus:border-brand-700 focus:bg-white focus:outline-none ${
+                  errors.password ? "border-red-400" : "border-line"
+                }`}
               />
               <button
                 type="button"
@@ -205,16 +250,17 @@ export default function LoginForm() {
                 className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-muted hover:text-brand-900"
                 aria-label={showPassword ? "Sembunyikan password" : "Tampilkan password"}
               >
-                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                {showPassword ? <Eye size={16} /> : <EyeOff size={16} />}
               </button>
             </div>
-          </Field>
+            {errors.password && <p className="mt-1 text-xs text-red-600">{errors.password}</p>}
+          </div>
 
           {mode === "login" && (
             <div className="flex justify-end">
               <Link
                 href="/lupa-password"
-                className="text-[11px] font-medium text-brand-700 hover:underline"
+                className="text-xs font-semibold text-[#165B3C] hover:underline"
               >
                 Lupa password?
               </Link>
@@ -222,30 +268,32 @@ export default function LoginForm() {
           )}
 
           {formError && (
-            <p role="alert" className="rounded-lg bg-red-50 px-3.5 py-2.5 text-xs text-red-700">
+            <p role="alert" className="rounded-xl bg-red-50 px-3.5 py-2.5 text-xs text-red-700">
               {formError}
             </p>
           )}
 
-          <div className="flex justify-center pt-1">
-            <Button type="submit" className="w-full sm:w-40" disabled={submitting}>
-              {submitting
-                ? "Memproses..."
-                : mode === "register"
-                  ? "Daftar Akun"
-                  : "Masuk"}
-            </Button>
-          </div>
+          <button
+            type="submit"
+            disabled={submitting}
+            className="mt-1 flex h-11 w-full items-center justify-center rounded-xl bg-[#165B3C] px-5 text-sm font-semibold text-white shadow-xs transition-colors hover:bg-[#114930] disabled:opacity-60"
+          >
+            {submitting
+              ? "Memproses..."
+              : mode === "register"
+                ? "Daftar Akun"
+                : "Masuk"}
+          </button>
         </form>
 
-        <div className="mt-6 border-t border-line pt-4 text-center text-xs text-muted">
+        <div className="mt-6 text-center text-xs text-muted">
           {mode === "login" ? (
             <>
               Belum punya akun?{" "}
               <button
                 type="button"
                 onClick={() => switchMode("register")}
-                className="font-semibold text-brand-700 hover:underline"
+                className="font-semibold text-[#165B3C] hover:underline"
               >
                 Daftar dengan email Anda
               </button>
@@ -256,7 +304,7 @@ export default function LoginForm() {
               <button
                 type="button"
                 onClick={() => switchMode("login")}
-                className="font-semibold text-brand-700 hover:underline"
+                className="font-semibold text-[#165B3C] hover:underline"
               >
                 Masuk di sini
               </button>
