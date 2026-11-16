@@ -17,7 +17,6 @@ import {
   useData,
 } from "@/services/dataService";
 import { HARI_SENIN_DULU, dayName, timeToMinutes } from "@/lib/date";
-import { daftarDokter } from "@/lib/selectors";
 
 const INITIAL = {
   dokterNama: "",
@@ -69,19 +68,10 @@ export default function JadwalDokterForm({ editId }) {
     );
   }
 
-  const masterDokter = daftarDokter(data.jadwalDokter, data.dokter);
-
   const onChange = (e) => {
     const { name, value } = e.target;
     setValues((v) => {
       const next = { ...v, [name]: value };
-      // Jika memilih dokter yang sudah ada di master, isi spesialisasi otomatis (PRD KD-5).
-      if (name === "dokterNama") {
-        const match = masterDokter.find(
-          (d) => d.nama.toLowerCase() === value.trim().toLowerCase()
-        );
-        if (match && !v.spesialisasi) next.spesialisasi = match.spesialisasi;
-      }
       // Jika memilih tanggal spesifik, otomatis sesuaikan hari praktik.
       if (name === "tanggal" && value) {
         next.hari = dayName(value);
@@ -181,17 +171,12 @@ export default function JadwalDokterForm({ editId }) {
               <Input
                 id="dokterNama"
                 name="dokterNama"
-                list="master-dokter-list"
+                autoComplete="off"
                 placeholder="dr. Nama Lengkap"
                 value={values.dokterNama}
                 onChange={onChange}
                 error={errors.dokterNama}
               />
-              <datalist id="master-dokter-list">
-                {masterDokter.map((d) => (
-                  <option key={d.nama} value={d.nama} />
-                ))}
-              </datalist>
             </Field>
 
             <Field label="Spesialisasi" htmlFor="spesialisasi" error={errors.spesialisasi}>
