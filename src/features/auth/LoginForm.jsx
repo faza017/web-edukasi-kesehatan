@@ -135,8 +135,8 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="w-full">
-      <div className="rounded-[24px] bg-white px-6 py-8 text-slate-800 shadow-sm sm:px-9 sm:py-9">
+    <div className="w-full max-w-[460px]">
+      <div className="rounded-3xl bg-white px-7 py-9 shadow-[0_12px_40px_-12px_rgba(20,83,45,0.12)] sm:px-10 sm:py-10">
         {/* Ikon Perisai Medis & Judul */}
         <div className="flex flex-col items-center text-center">
           <ShieldCrossIcon />
