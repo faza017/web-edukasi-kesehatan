@@ -201,10 +201,30 @@ export async function POST(request) {
             deskripsi: payload.deskripsi,
           });
           dbError = error;
+
+          // Sinkronkan juga ke jadwal_dokter agar tampil di halaman Jadwal Dokter & Beranda
+          if (!error && payload.tanggal) {
+            const HARI_ID = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+            const [y, m, d] = payload.tanggal.split("-").map(Number);
+            const hari = HARI_ID[new Date(Date.UTC(y, m - 1, d, 12)).getUTCDay()];
+            await sb.from("jadwal_dokter").upsert({
+              id: `jd-${payload.id}`,
+              dokter_nama: payload.penyelenggara,
+              spesialisasi: payload.nama,
+              hari,
+              tanggal: payload.tanggal,
+              jam_mulai: payload.waktuMulai,
+              jam_selesai: payload.waktuSelesai,
+              lokasi: `${payload.nama} — ${payload.lokasi}`,
+              kuota: payload.kuota,
+              status: "aktif",
+            });
+          }
           break;
         }
         case "kegiatan:delete": {
           const { error } = await sb.from("kegiatan").delete().eq("id", payload.id);
+          await sb.from("jadwal_dokter").delete().eq("id", `jd-${payload.id}`);
           dbError = error;
           break;
         }

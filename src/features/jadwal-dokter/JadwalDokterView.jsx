@@ -186,7 +186,9 @@ export default function JadwalDokterView() {
                 >
                   <div>
                     <p className="text-[13px] font-semibold text-brand-900">{j.dokterNama}</p>
-                    <p className="mt-1 text-[10px] text-muted">{data.pengaturan.namaFaskes}</p>
+                    <p className="mt-1 text-[10px] text-muted">
+                      {j.tanggal ? `${j.hari}, ${j.tanggal.split("-").reverse().join("/")}` : data.pengaturan.namaFaskes}
+                    </p>
                   </div>
                   <p className="text-xs font-semibold text-brand-900">
                     {formatTimeRange(j.jamMulai, j.jamSelesai)}
