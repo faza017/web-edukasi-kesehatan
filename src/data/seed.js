@@ -115,42 +115,75 @@ const jurnal = [
   },
 ];
 
-/** Jadwal dokter. `tanggal` null = jadwal berulang setiap `hari` (PRD KD-4). */
+/** Jadwal dokter khusus bulan November 2026 (terelasi dengan jadwal kegiatan). */
 function buildJadwalDokter() {
-  const list = [];
-  let n = 1;
-  const push = (data) => list.push({ id: `jd-${n++}`, tanggal: null, ...data });
-
-  const andi = {
-    dokterNama: "dr. Andi Pratama",
-    spesialisasi: "Dokter Umum",
-    lokasi: "Poli Umum — Ruang 01",
-  };
-  ["Senin", "Selasa", "Rabu", "Kamis", "Jumat"].forEach((hari) =>
-    push({ ...andi, hari, jamMulai: "09:00", jamSelesai: "12:00", kuota: 20, status: "aktif" })
-  );
-  push({ ...andi, hari: "Sabtu", jamMulai: "08:00", jamSelesai: "11:00", kuota: 15, status: "penuh" });
-
-  const siti = {
-    dokterNama: "dr. Siti Rahma, Sp.KK",
-    spesialisasi: "Spesialis Kulit",
-    lokasi: "Poli Kulit — Ruang 03",
-  };
-  ["Senin", "Rabu", "Kamis"].forEach((hari) =>
-    push({ ...siti, hari, jamMulai: "13:00", jamSelesai: "15:00", kuota: 10, status: "aktif" })
-  );
-  push({ ...siti, hari: "Jumat", jamMulai: "13:00", jamSelesai: "15:00", kuota: 10, status: "dibatalkan" });
-
-  const maya = {
-    dokterNama: "drg. Maya Lestari",
-    spesialisasi: "Dokter Gigi",
-    lokasi: "Poli Gigi — Ruang 02",
-  };
-  ["Selasa", "Kamis"].forEach((hari) =>
-    push({ ...maya, hari, jamMulai: "08:00", jamSelesai: "11:30", kuota: 12, status: "aktif" })
-  );
-
-  return list;
+  return [
+    {
+      id: "jd-kg-1",
+      dokterNama: "Rini Kurniani, Amd.Keb & Yeni Anggraini, Amd.Keb",
+      spesialisasi: "Kelas BUMIL & Kelas BALITA",
+      hari: "Kamis",
+      tanggal: "2026-11-05",
+      jamMulai: "08:00",
+      jamSelesai: "12:00",
+      lokasi:
+        "Kelas BUMIL & BALITA — Perum Polda (Lansia 08.00-09.30, Balita 09.30-11.00, Bumil/Usia Produktif 11.00-12.00)",
+      kuota: 50,
+      status: "aktif",
+    },
+    {
+      id: "jd-kg-2",
+      dokterNama: "Rini Kurniani, Amd.Keb",
+      spesialisasi: "POSY. KARTIKA",
+      hari: "Rabu",
+      tanggal: "2026-11-11",
+      jamMulai: "08:00",
+      jamSelesai: "12:00",
+      lokasi:
+        "POSY. KARTIKA (Lansia 08.00-09.30, Balita 09.30-11.00, Bumil/Usia Produktif 11.00-12.00)",
+      kuota: 60,
+      status: "aktif",
+    },
+    {
+      id: "jd-kg-3",
+      dokterNama: "Rini Kurniani, Amd.Keb",
+      spesialisasi: "POSYANDU CUT MUTYA",
+      hari: "Kamis",
+      tanggal: "2026-11-12",
+      jamMulai: "08:00",
+      jamSelesai: "12:00",
+      lokasi:
+        "POSYANDU CUT MUTYA (Lansia 08.00-09.30, Balita 09.30-11.00, Bumil/Usia Produktif 11.00-12.00)",
+      kuota: 60,
+      status: "aktif",
+    },
+    {
+      id: "jd-kg-4",
+      dokterNama: "Rini Kurniani, Amd.Keb",
+      spesialisasi: "POSY. ILP DAHLIA",
+      hari: "Jumat",
+      tanggal: "2026-11-13",
+      jamMulai: "08:00",
+      jamSelesai: "12:00",
+      lokasi:
+        "POSY. ILP DAHLIA (Lansia 08.00-09.30, Balita 09.30-11.00, Bumil/Usia Produktif 11.00-12.00)",
+      kuota: 60,
+      status: "aktif",
+    },
+    {
+      id: "jd-kg-5",
+      dokterNama: "Rini Kurniani, Amd.Keb",
+      spesialisasi: "POSBINDU KARTIKA",
+      hari: "Senin",
+      tanggal: "2026-11-16",
+      jamMulai: "08:00",
+      jamSelesai: "12:00",
+      lokasi:
+        "POSBINDU KARTIKA (Lansia 08.00-09.30, Balita 09.30-11.00, Bumil/Usia Produktif 11.00-12.00)",
+      kuota: 60,
+      status: "aktif",
+    },
+  ];
 }
 
 function buildKegiatan() {

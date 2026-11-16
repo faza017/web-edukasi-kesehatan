@@ -88,7 +88,7 @@ export default function JadwalDokterForm({ editId }) {
   const validate = () => {
     const next = {};
     if (!values.dokterNama.trim()) next.dokterNama = "Nama dokter wajib diisi.";
-    if (!values.hari && !values.tanggal) next.hari = "Pilih hari praktik atau tanggal spesifik.";
+    if (!values.tanggal) next.tanggal = "Tanggal praktik wajib diisi.";
     if (!values.jamMulai) next.jamMulai = "Jam mulai wajib diisi.";
     if (!values.jamSelesai) next.jamSelesai = "Jam selesai wajib diisi.";
     if (
@@ -195,9 +195,10 @@ export default function JadwalDokterForm({ editId }) {
             </Field>
 
             <Field
-              label="Tanggal (Opsional)"
+              label="Tanggal Praktik"
               htmlFor="tanggal"
-              hint="Kosongkan untuk jadwal berulang mingguan"
+              error={errors.tanggal}
+              hint="Hari praktik otomatis menyesuaikan tanggal"
             >
               <Input
                 id="tanggal"
@@ -205,6 +206,7 @@ export default function JadwalDokterForm({ editId }) {
                 type="date"
                 value={values.tanggal}
                 onChange={onChange}
+                error={errors.tanggal}
               />
             </Field>
 

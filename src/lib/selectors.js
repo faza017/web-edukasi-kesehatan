@@ -24,11 +24,11 @@ export const STATUS_JADWAL = {
   tidak_aktif: { label: "Tidak aktif", userLabel: "Tidak aktif", tone: "gray" },
 };
 
-/** Semua jadwal yang berlaku pada tanggal tertentu (cocok tanggal spesifik ATAU hari praktik), urut jam mulai. */
+/** Semua jadwal yang berlaku tepat pada tanggal tertentu (atau jadwal berulang tanpa tanggal), urut jam mulai. */
 export function jadwalPadaTanggal(jadwalDokter, iso) {
   const hari = dayName(iso);
   return jadwalDokter
-    .filter((j) => j.tanggal === iso || j.hari === hari)
+    .filter((j) => (j.tanggal ? j.tanggal === iso : j.hari === hari))
     .sort((a, b) => timeToMinutes(a.jamMulai) - timeToMinutes(b.jamMulai));
 }
 
