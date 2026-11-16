@@ -183,6 +183,7 @@ export default function JadwalDokterForm({ editId }) {
               <Input
                 id="spesialisasi"
                 name="spesialisasi"
+                autoComplete="off"
                 placeholder="Contoh: Dokter Umum"
                 value={values.spesialisasi}
                 onChange={onChange}

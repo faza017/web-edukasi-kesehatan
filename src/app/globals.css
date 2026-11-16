@@ -28,8 +28,9 @@ body {
   font-family: var(--font-sans);
 }
 
-/* Fokus keyboard yang jelas (PRD 8 — Aksesibilitas) */
-:focus-visible {
+/* Fokus keyboard yang jelas tanpa membuat double border pada input */
+button:focus-visible,
+a:focus-visible {
   outline: 2px solid var(--color-brand-700);
   outline-offset: 2px;
 }
