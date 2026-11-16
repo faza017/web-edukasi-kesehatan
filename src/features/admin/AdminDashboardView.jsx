@@ -18,7 +18,7 @@ export default function AdminDashboardView() {
   const today = todayISO();
   const terbitList = data.jurnal.filter((j) => j.status === "terbit");
   const draftList = data.jurnal.filter((j) => j.status === "draft");
-  const dokterList = daftarDokter(data.jadwalDokter);
+  const dokterList = daftarDokter(data.jadwalDokter, data.dokter);
   const jadwalHariIni = jadwalPadaTanggal(data.jadwalDokter, today).filter(
     (j) => j.status !== "tidak_aktif"
   );

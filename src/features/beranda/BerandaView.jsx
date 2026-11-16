@@ -57,7 +57,7 @@ export default function BerandaView() {
       <PageHeader
         title={
           <>
-            {greeting()}, {user?.nama || "Rasya"} <span aria-hidden>👋</span>
+            {greeting()}, {user?.nama || "User"} <span aria-hidden>👋</span>
           </>
         }
         subtitle={`Akses informasi kesehatan dan layanan ${data.pengaturan.namaFaskes}.`}

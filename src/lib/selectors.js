@@ -46,9 +46,13 @@ export function daftarPoli(jadwalDokter) {
   return [...new Set(jadwalDokter.map((j) => poliDariLokasi(j.lokasi)).filter(Boolean))].sort();
 }
 
-export function daftarDokter(jadwalDokter) {
+export function daftarDokter(jadwalDokter, dokterMaster = []) {
   const map = new Map();
-  jadwalDokter.forEach((j) => {
+  (dokterMaster || []).forEach((d) => {
+    const key = d.nama.trim().toLowerCase();
+    if (!map.has(key)) map.set(key, { nama: d.nama, spesialisasi: d.spesialisasi });
+  });
+  (jadwalDokter || []).forEach((j) => {
     const key = j.dokterNama.trim().toLowerCase();
     if (!map.has(key)) map.set(key, { nama: j.dokterNama, spesialisasi: j.spesialisasi });
   });

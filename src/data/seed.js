@@ -13,7 +13,7 @@ export const DEMO_ACCOUNTS = [
 const users = [
   {
     id: "u-1",
-    nama: "Rasya",
+    nama: "User",
     email: "user@email.com",
     // CATATAN: hanya untuk demo. Di backend asli password WAJIB di-hash (bcrypt/argon2).
     password: "user123",

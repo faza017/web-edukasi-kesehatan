@@ -80,13 +80,14 @@ export async function getAllPortalData() {
     return { mode: "local-server", data: readLocalDb() };
   }
 
-  const [katRes, jurRes, jadRes, kegRes, pengRes, usrRes] = await Promise.all([
+  const [katRes, jurRes, jadRes, kegRes, pengRes, usrRes, dokRes] = await Promise.all([
     sb.from("kategori").select("*").order("nama"),
     sb.from("jurnal").select("*").order("tanggal_terbit", { ascending: false }),
     sb.from("jadwal_dokter").select("*"),
     sb.from("kegiatan").select("*").order("tanggal", { ascending: false }),
     sb.from("pengaturan").select("*"),
     sb.from("users").select("id, nama, email, peran"),
+    sb.from("dokter").select("*").order("nama"),
   ]);
 
   if (katRes.error) {
@@ -106,6 +107,7 @@ export async function getAllPortalData() {
       version: 2,
       users: usrRes.data?.length ? usrRes.data : seed.users,
       kategori: katRes.data || [],
+      dokter: dokRes.data || [],
       jurnal: (jurRes.data || []).map(mapJurnalRow),
       jadwalDokter: (jadRes.data || []).map(mapJadwalRow),
       kegiatan: (kegRes.data || []).map(mapKegiatanRow),

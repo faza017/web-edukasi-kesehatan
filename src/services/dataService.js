@@ -1,7 +1,9 @@
 /**
- * Layanan Data Terintegrasi Backend (Next.js API Route Handlers + Supabase Cloud PostgreSQL).
- * Menyediakan pembacaan reaktif instan untuk komponen UI sekaligus menyinkronkan setiap
- * perubahan CRUD ke endpoint server `/api/portal` (yang menulis ke Supabase Cloud / Server DB).
+ * Layanan Data Utama — Terhubung penuh ke Supabase PostgreSQL melalui `/api/portal`.
+ *
+ * Penyimpanan data utama (Jurnal, Kategori, Dokter, Jadwal Dokter, Kegiatan, Pengaturan)
+ * TIDAK lagi disimpan di Local Storage (`storageKey = null`), melainkan langsung
+ * dimuat dan disimpan ke database Supabase Cloud.
  */
 import { useEffect } from "react";
 import { createStore } from "@/lib/createStore";
@@ -9,11 +11,12 @@ import { createSeed } from "@/data/seed";
 import { dayName, timeToMinutes } from "@/lib/date";
 import { slugify, uid } from "@/lib/utils";
 
-export const dataStore = createStore("pbag-data-v2", createSeed);
+// storageKey = null -> Data utama hanya di memori + Supabase Cloud (bukan di Local Storage)
+export const dataStore = createStore(null, createSeed);
 
 let initialSyncStarted = false;
 
-async function syncFromBackend() {
+export async function syncFromBackend() {
   if (typeof window === "undefined") return;
   try {
     const res = await fetch("/api/portal", { cache: "no-store" });
@@ -22,15 +25,15 @@ async function syncFromBackend() {
     if (json?.data) {
       dataStore.setState(json.data);
     }
-  } catch {
-    // Tetap gunakan cache lokal bila sedang offline
+  } catch (err) {
+    console.error("Gagal memuat data dari Supabase:", err);
   }
 }
 
 async function pushToBackend(action, payload) {
   if (typeof window === "undefined") return;
   try {
-    await fetch("/api/portal", {
+    const res = await fetch("/api/portal", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -39,18 +42,31 @@ async function pushToBackend(action, payload) {
         snapshot: dataStore.getState(),
       }),
     });
+    const json = await res.json();
+    if (res.ok && json?.data) {
+      dataStore.setState(json.data);
+    }
+    return json;
   } catch (err) {
-    console.error("Gagal menyinkronkan ke backend:", err);
+    console.error("Gagal menyinkronkan ke Supabase:", err);
+    return { ok: false, error: err.message };
   }
 }
 
-/** Hook utama untuk membaca seluruh data & otomatis sinkronisasi dari backend `/api/portal`. */
+/** Hook utama untuk membaca seluruh data & otomatis memuat dari Supabase `/api/portal`. */
 export function useData() {
   const storeData = dataStore.useStore();
 
   useEffect(() => {
     if (!initialSyncStarted) {
       initialSyncStarted = true;
+      // Bersihkan sisa key localStorage lama dari versi prototipe
+      try {
+        window.localStorage.removeItem("pbag-data-v1");
+        window.localStorage.removeItem("pbag-data-v2");
+      } catch {
+        // abaikan
+      }
       syncFromBackend();
     }
   }, []);

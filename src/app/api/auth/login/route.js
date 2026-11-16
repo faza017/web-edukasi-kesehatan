@@ -4,7 +4,7 @@ import { readLocalDb } from "@/lib/serverDb";
 
 /**
  * POST /api/auth/login
- * Endpoint autentikasi backend (Supabase Auth / Tabel Users PostgreSQL / Fallback Server).
+ * Endpoint autentikasi backend (Supabase Auth + Tabel `public.users` PostgreSQL).
  */
 export async function POST(request) {
   try {
@@ -20,6 +20,7 @@ export async function POST(request) {
 
     const sb = getServerSupabase();
     if (sb) {
+      // 1. Cek di tabel public.users
       const { data: userRow, error } = await sb
         .from("users")
         .select("id, nama, email, password_hash, peran")
@@ -27,12 +28,23 @@ export async function POST(request) {
         .maybeSingle();
 
       if (!error && userRow) {
+        if (userRow.password_hash === "GOOGLE_OAUTH") {
+          return NextResponse.json(
+            {
+              ok: false,
+              error: "Email ini terdaftar menggunakan Google. Silakan klik tombol 'Masuk dengan Google'.",
+            },
+            { status: 401 }
+          );
+        }
+
         if (userRow.password_hash !== password) {
           return NextResponse.json(
             { ok: false, error: "Email atau password salah." },
             { status: 401 }
           );
         }
+
         return NextResponse.json({
           ok: true,
           mode: "supabase-cloud",
@@ -44,6 +56,47 @@ export async function POST(request) {
           },
         });
       }
+
+      // 2. Jika belum ada di public.users tapi terdaftar di Supabase Auth, verifikasi via Supabase Auth
+      const { data: authSign, error: signErr } = await sb.auth.signInWithPassword({
+        email: cleanEmail,
+        password,
+      });
+
+      if (!signErr && authSign?.user) {
+        const nama =
+          authSign.user.user_metadata?.full_name ||
+          authSign.user.user_metadata?.name ||
+          cleanEmail.split("@")[0];
+        const peran = authSign.user.user_metadata?.peran || "pengguna";
+
+        await sb.from("users").upsert({
+          id: authSign.user.id,
+          nama,
+          email: cleanEmail,
+          password_hash: password,
+          peran,
+        });
+
+        return NextResponse.json({
+          ok: true,
+          mode: "supabase-cloud",
+          user: {
+            id: authSign.user.id,
+            nama,
+            email: cleanEmail,
+            peran,
+          },
+        });
+      }
+
+      return NextResponse.json(
+        {
+          ok: false,
+          error: "Akun belum terdaftar atau password salah. Silakan daftar akun terlebih dahulu atau masuk dengan Google.",
+        },
+        { status: 401 }
+      );
     }
 
     // Fallback ke database server lokal
@@ -73,4 +126,3 @@ export async function POST(request) {
     );
   }
 }
-

@@ -69,7 +69,7 @@ export default function JadwalDokterForm({ editId }) {
     );
   }
 
-  const masterDokter = daftarDokter(data.jadwalDokter);
+  const masterDokter = daftarDokter(data.jadwalDokter, data.dokter);
 
   const onChange = (e) => {
     const { name, value } = e.target;

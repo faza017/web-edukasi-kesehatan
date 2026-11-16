@@ -1,24 +1,29 @@
 /**
- * Store sederhana berbasis localStorage + useSyncExternalStore.
+ * In-Memory Reactive Store berbasis useSyncExternalStore.
  *
- * Ini adalah lapisan data MOCK untuk MVP frontend. Saat backend siap
- * (mis. Next.js Route Handlers / Server Actions + Supabase), cukup ganti
- * implementasi di `src/services/*` tanpa mengubah komponen halaman.
+ * Penyimpanan utama kini berada di database Supabase PostgreSQL.
+ * Store ini menjaga state reaktif di memori browser agar seluruh komponen
+ * UI langsung merender ulang saat data dari Supabase dimuat atau diperbarui.
+ * Jika `storageKey` diberikan (mis. untuk sesi login), barulah disinkronkan ke localStorage.
  */
 import { useSyncExternalStore } from "react";
 
-export function createStore(key, createInitial) {
-  let state; // cache di memori (undefined = belum dimuat)
+export function createStore(storageKey, createInitial) {
+  let state;
   const listeners = new Set();
 
   function load() {
     if (state !== undefined) return state;
-    try {
-      const raw = window.localStorage.getItem(key);
-      state = raw ? JSON.parse(raw) : createInitial();
-    } catch {
-      state = createInitial();
+    if (storageKey && typeof window !== "undefined") {
+      try {
+        const raw = window.localStorage.getItem(storageKey);
+        state = raw ? JSON.parse(raw) : createInitial();
+        return state;
+      } catch {
+        // lanjut ke createInitial
+      }
     }
+    state = createInitial();
     return state;
   }
 
@@ -28,9 +33,12 @@ export function createStore(key, createInitial) {
 
   function subscribe(listener) {
     listeners.add(listener);
+    if (!storageKey || typeof window === "undefined") {
+      return () => listeners.delete(listener);
+    }
     const onStorage = (e) => {
-      if (e.key === key) {
-        state = undefined; // sinkron antar-tab
+      if (e.key === storageKey) {
+        state = undefined;
         listener();
       }
     };
@@ -44,26 +52,27 @@ export function createStore(key, createInitial) {
   function setState(updater) {
     const next = typeof updater === "function" ? updater(load()) : updater;
     state = next;
-    try {
-      window.localStorage.setItem(key, JSON.stringify(next));
-    } catch (err) {
-      console.error("Gagal menyimpan ke localStorage:", err);
-      throw new Error("Penyimpanan penuh. Coba unggah berkas yang lebih kecil.");
+    if (storageKey && typeof window !== "undefined") {
+      try {
+        window.localStorage.setItem(storageKey, JSON.stringify(next));
+      } catch (err) {
+        console.error("Gagal menyimpan sesi:", err);
+      }
     }
     emit();
   }
 
   function reset() {
     state = createInitial();
-    window.localStorage.setItem(key, JSON.stringify(state));
+    if (storageKey && typeof window !== "undefined") {
+      window.localStorage.setItem(storageKey, JSON.stringify(state));
+    }
     emit();
   }
 
-  /** Hook React. Mengembalikan `undefined` saat render di server / sebelum hidrasi. */
   function useStore() {
     return useSyncExternalStore(subscribe, load, () => undefined);
   }
 
   return { getState: load, setState, reset, useStore };
 }
-

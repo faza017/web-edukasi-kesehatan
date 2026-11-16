@@ -86,7 +86,7 @@ CREATE TABLE IF NOT EXISTS public.pengaturan (
 -- ============================================================================
 
 INSERT INTO public.users (id, nama, email, password_hash, peran) VALUES
-  ('u-1', 'Rasya', 'user@email.com', 'user123', 'pengguna'),
+  ('u-1', 'User', 'user@email.com', 'user123', 'pengguna'),
   ('u-2', 'Petugas Puskesmas', 'admin@puskesmas.id', 'admin123', 'admin')
 ON CONFLICT (id) DO NOTHING;
 
