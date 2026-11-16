@@ -9,11 +9,11 @@ const inter = Inter({
 
 export const metadata = {
   title: {
-    default: "Portal Kesehatan Puskesmas Banjar Agung",
-    template: "%s — Puskesmas Banjar Agung",
+    default: "Portal Kesehatan Posyandu Banjar Agung",
+    template: "%s — Posyandu Banjar Agung",
   },
   description:
-    "Portal Kesehatan Puskesmas Banjar Agung: jurnal kesehatan, jadwal dokter, dan jadwal kegiatan dalam satu tempat.",
+    "Portal Kesehatan Posyandu Banjar Agung: jurnal kesehatan, jadwal dokter, dan jadwal kegiatan dalam satu tempat.",
 };
 
 export const viewport = {

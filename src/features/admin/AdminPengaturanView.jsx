@@ -70,7 +70,7 @@ export default function AdminPengaturanView() {
 
       <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
         <Card className="p-6">
-          <h2 className="text-base font-bold text-brand-900">Informasi Puskesmas & Layanan</h2>
+          <h2 className="text-base font-bold text-brand-900">Informasi Posyandu & Layanan</h2>
           <p className="mt-1 text-xs text-muted">
             Ditampilkan pada Beranda, Sidebar Bantuan, dan halaman Jadwal Dokter.
           </p>

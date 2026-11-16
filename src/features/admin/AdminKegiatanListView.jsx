@@ -50,7 +50,7 @@ export default function AdminKegiatanListView() {
     <>
       <PageHeader
         title="Kelola Jadwal Kegiatan"
-        subtitle="Daftar kegiatan penyuluhan, pemeriksaan, dan seminar kesehatan Puskesmas Banjar Agung."
+        subtitle="Daftar kegiatan penyuluhan, pemeriksaan, dan seminar kesehatan Posyandu Banjar Agung."
       />
 
       <div className="flex flex-wrap items-center justify-between gap-3">

@@ -42,7 +42,7 @@ export function Brand({ subtitle, className }) {
       <div className="flex items-start gap-2 text-white">
         <span className="mt-0.5 text-lg font-black leading-none">✚</span>
         <span className="text-base font-bold leading-tight">
-          Puskesmas
+          Posyandu
           <br />
           Banjar Agung
         </span>

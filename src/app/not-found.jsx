@@ -10,7 +10,7 @@ export default function NotFound() {
         Halaman yang Anda cari tidak tersedia
       </h1>
       <p className="mt-2 max-w-md text-xs text-muted">
-        Periksa kembali alamat tautan atau kembali ke halaman utama Portal Kesehatan Puskesmas
+        Periksa kembali alamat tautan atau kembali ke halaman utama Portal Kesehatan Posyandu
         Banjar Agung.
       </p>
       <Link

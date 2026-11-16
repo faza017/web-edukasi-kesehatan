@@ -36,7 +36,7 @@ export default function JadwalKegiatanView() {
     <>
       <PageHeader
         title="Jadwal Kegiatan"
-        subtitle="Ikuti kegiatan penyuluhan, pemeriksaan gratis, dan seminar kesehatan Puskesmas Banjar Agung."
+        subtitle="Ikuti kegiatan penyuluhan, pemeriksaan gratis, dan seminar kesehatan Posyandu Banjar Agung."
       />
 
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -115,7 +115,7 @@ export default function JadwalKegiatanView() {
         <div className="mt-5">
           <EmptyState
             title="Belum ada jadwal kegiatan"
-            description="Kegiatan kesehatan yang dijadwalkan puskesmas akan tampil di halaman ini."
+            description="Kegiatan kesehatan yang dijadwalkan posyandu akan tampil di halaman ini."
           />
         </div>
       )}

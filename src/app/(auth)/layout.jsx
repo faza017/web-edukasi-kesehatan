@@ -65,7 +65,7 @@ export default function AuthLayout({ children }) {
           <div className="inline-flex items-center overflow-hidden rounded-2xl bg-white px-4 py-2.5 shadow-lg">
             <Image
               src="/logo.png"
-              alt="Portal Kesehatan Puskesmas Banjar Agung"
+              alt="Portal Kesehatan Posyandu Banjar Agung"
               width={1024}
               height={682}
               priority

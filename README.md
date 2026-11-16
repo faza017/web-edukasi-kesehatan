@@ -1,6 +1,6 @@
-# Portal Kesehatan Puskesmas Banjar Agung
+# Portal Kesehatan Posyandu Banjar Agung
 
-Aplikasi web **Jurnal Kesehatan, Jadwal Dokter, dan Jadwal Kegiatan** Puskesmas Banjar Agung yang dibangun menggunakan **Next.js (App Router)**, **React (JSX)**, dan **Tailwind CSS** sesuai spesifikasi `docs/PRD.md` dan desain `design/`.
+Aplikasi web **Jurnal Kesehatan, Jadwal Dokter, dan Jadwal Kegiatan** Posyandu Banjar Agung yang dibangun menggunakan **Next.js (App Router)**, **React (JSX)**, dan **Tailwind CSS** sesuai spesifikasi `docs/PRD.md` dan desain `design/`.
 
 ## Cara Menjalankan di Lokal
 

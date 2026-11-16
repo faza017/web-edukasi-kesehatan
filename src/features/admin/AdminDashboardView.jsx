@@ -54,7 +54,7 @@ export default function AdminDashboardView() {
           <p className="text-[11px] text-muted">Dokter terdaftar</p>
           <p className="mt-2 text-2xl font-bold text-brand-900">{dokterList.length}</p>
           <p className="mt-2 truncate text-[10px] text-muted">
-            {poliNote || "Tersedia di puskesmas"}
+            {poliNote || "Tersedia di posyandu"}
           </p>
         </Card>
         <Card className="p-4">
