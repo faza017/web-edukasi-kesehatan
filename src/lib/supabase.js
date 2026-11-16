@@ -1,8 +1,13 @@
 import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || supabaseAnonKey;
+const supabaseUrl =
+  process.env.NEXT_PUBLIC_SUPABASE_URL ||
+  "https://ohsdavpfsquxmrfkrglv.supabase.co";
+const supabaseAnonKey =
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+  "sb_publishable_S1ABhJO0qvuuzp7zUMHaJw_9-RIoTeI";
+const supabaseServiceKey =
+  process.env.SUPABASE_SERVICE_ROLE_KEY || supabaseAnonKey;
 
 /** Apakah kredensial Supabase Cloud sudah diisi di .env.local? */
 export const isSupabaseConfigured = Boolean(
