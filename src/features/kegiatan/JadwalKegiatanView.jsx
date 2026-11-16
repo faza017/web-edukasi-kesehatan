@@ -17,7 +17,7 @@ import { JENIS_KEGIATAN } from "@/lib/selectors";
 /** Jadwal Kegiatan Pengguna (PRD 6.5 — KEG-U1 s/d KEG-U4). */
 export default function JadwalKegiatanView() {
   const data = useData();
-  const [tab, setTab] = useState("upcoming");
+  const [tab, setTab] = useState("all");
   const [jenis, setJenis] = useState("all");
   const [selected, setSelected] = useState(null);
 
@@ -25,13 +25,12 @@ export default function JadwalKegiatanView() {
 
   const today = todayISO();
   const list = data.kegiatan
-    .filter((k) => (tab === "upcoming" ? k.tanggal >= today : k.tanggal < today))
+    .filter((k) => {
+      if (tab === "all") return true;
+      return tab === "upcoming" ? k.tanggal >= today : k.tanggal < today;
+    })
     .filter((k) => jenis === "all" || k.jenis === jenis)
-    .sort((a, b) =>
-      tab === "upcoming"
-        ? a.tanggal.localeCompare(b.tanggal)
-        : b.tanggal.localeCompare(a.tanggal)
-    );
+    .sort((a, b) => a.tanggal.localeCompare(b.tanggal));
 
   return (
     <>
@@ -42,8 +41,11 @@ export default function JadwalKegiatanView() {
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap gap-2">
+          <Chip active={tab === "all"} onClick={() => setTab("all")}>
+            Semua Jadwal
+          </Chip>
           <Chip active={tab === "upcoming"} onClick={() => setTab("upcoming")}>
-            Mendatang
+            Hari Ini & Mendatang
           </Chip>
           <Chip active={tab === "past"} onClick={() => setTab("past")}>
             Selesai
@@ -76,7 +78,7 @@ export default function JadwalKegiatanView() {
                     <span className="text-[11px] text-muted">{k.penyelenggara}</span>
                   </div>
                   <h3 className="mt-3 text-base font-bold text-brand-900">{k.nama}</h3>
-                  <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-muted">
+                  <p className="mt-2 whitespace-pre-line text-xs leading-relaxed text-muted">
                     {k.deskripsi}
                   </p>
 
@@ -136,7 +138,9 @@ export default function JadwalKegiatanView() {
               </Badge>
               <Badge tone="gray">{selected.penyelenggara}</Badge>
             </div>
-            <p className="text-sm leading-relaxed text-slate-700">{selected.deskripsi}</p>
+            <p className="whitespace-pre-line text-sm leading-relaxed text-slate-700">
+              {selected.deskripsi}
+            </p>
             <div className="rounded-xl bg-brand-50/70 p-3.5 space-y-1.5 text-brand-900">
               <p>
                 <strong>Tanggal:</strong> {formatDate(selected.tanggal)}

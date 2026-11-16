@@ -3,7 +3,7 @@
  * Disimpan ke localStorage saat pertama kali aplikasi dibuka.
  * Nanti dapat diganti dengan database (mis. Supabase/PostgreSQL).
  */
-import { addDays, todayISO } from "@/lib/date";
+import { todayISO } from "@/lib/date";
 
 export const DEMO_ACCOUNTS = [
   { email: "user@email.com", password: "user123", label: "Pengguna" },
@@ -153,70 +153,82 @@ function buildJadwalDokter() {
   return list;
 }
 
-function buildKegiatan(today) {
+function buildKegiatan() {
+  const rincianJam =
+    "Jam Pelayanan:\n• LANSIA: 08.00 – 09.30 WIB\n• BALITA: 09.30 – 11.00 WIB\n• BUMIL / Apras / Remaja / Usia Produktif: 11.00 – 12.00 WIB";
+
   return [
     {
       id: "kg-1",
-      nama: "Seminar Pola Hidup Sehat",
-      jenis: "seminar",
-      penyelenggara: "Puskesmas Banjar Agung",
-      tanggal: addDays(today, 7),
-      waktuMulai: "09:00",
-      waktuSelesai: "11:30",
-      lokasi: "Aula Utama",
+      nama: "Kelas BUMIL & Kelas BALITA",
+      jenis: "penyuluhan",
+      penyelenggara: "Rini Kurniani, Amd.Keb & Yeni Anggraini, Amd.Keb",
+      tanggal: "2026-11-05",
+      waktuMulai: "08:00",
+      waktuSelesai: "12:00",
+      lokasi: "Perum Polda",
       kuota: 50,
-      deskripsi:
-        "Seminar interaktif tentang kebiasaan hidup sehat sehari-hari bersama dokter puskesmas. Terbuka untuk umum, gratis.",
+      deskripsi: `Kegiatan edukasi, pemeriksaan, dan pendampingan Kelas Ibu Hamil (BUMIL) serta Kelas Balita.\n\n${rincianJam}`,
     },
     {
       id: "kg-2",
-      nama: "Pemeriksaan Kesehatan Gratis Lansia (Posbindu)",
+      nama: "POSY. KARTIKA",
       jenis: "pemeriksaan",
-      penyelenggara: "Tim Posbindu Puskesmas",
-      tanggal: addDays(today, 13),
+      penyelenggara: "Rini Kurniani, Amd.Keb",
+      tanggal: "2026-11-11",
       waktuMulai: "08:00",
       waktuSelesai: "12:00",
-      lokasi: "Ruang Serbaguna",
-      kuota: 80,
-      deskripsi:
-        "Pemeriksaan tekanan darah, gula darah, kolesterol, dan konsultasi gizi untuk warga usia 45 tahun ke atas. Bawa KTP atau kartu BPJS.",
+      lokasi: "Posyandu Kartika",
+      kuota: 60,
+      deskripsi: `Pelayanan kesehatan terpadu masyarakat di Posyandu Kartika.\n\n${rincianJam}`,
     },
     {
       id: "kg-3",
-      nama: "Penyuluhan Gizi Balita",
-      jenis: "penyuluhan",
-      penyelenggara: "Ahli Gizi Puskesmas",
-      tanggal: addDays(today, 20),
-      waktuMulai: "09:00",
-      waktuSelesai: "11:00",
-      lokasi: "Balai Desa Banjar Agung",
-      kuota: 40,
-      deskripsi:
-        "Penyuluhan MPASI, pemantauan tumbuh kembang, dan pencegahan stunting untuk orang tua balita.",
+      nama: "POSYANDU CUT MUTYA",
+      jenis: "pemeriksaan",
+      penyelenggara: "Rini Kurniani, Amd.Keb",
+      tanggal: "2026-11-12",
+      waktuMulai: "08:00",
+      waktuSelesai: "12:00",
+      lokasi: "Posyandu Cut Mutya",
+      kuota: 60,
+      deskripsi: `Pelayanan kesehatan terpadu masyarakat di Posyandu Cut Mutya.\n\n${rincianJam}`,
     },
     {
       id: "kg-4",
-      nama: "Penyuluhan Demam Berdarah",
-      jenis: "penyuluhan",
-      penyelenggara: "Tim Kesehatan Lingkungan",
-      tanggal: addDays(today, -8),
-      waktuMulai: "13:00",
-      waktuSelesai: "15:00",
-      lokasi: "Aula Utama",
+      nama: "POSY. ILP DAHLIA",
+      jenis: "pemeriksaan",
+      penyelenggara: "Rini Kurniani, Amd.Keb",
+      tanggal: "2026-11-13",
+      waktuMulai: "08:00",
+      waktuSelesai: "12:00",
+      lokasi: "Posyandu ILP Dahlia",
       kuota: 60,
-      deskripsi: "Gerakan 3M Plus dan pengenalan gejala awal demam berdarah dengue.",
+      deskripsi: `Pelayanan kesehatan Integrasi Layanan Primer (ILP) di Posyandu Dahlia.\n\n${rincianJam}`,
+    },
+    {
+      id: "kg-5",
+      nama: "POSBINDU KARTIKA",
+      jenis: "pemeriksaan",
+      penyelenggara: "Rini Kurniani, Amd.Keb",
+      tanggal: "2026-11-16",
+      waktuMulai: "08:00",
+      waktuSelesai: "12:00",
+      lokasi: "Posbindu Kartika",
+      kuota: 60,
+      deskripsi: `Pelayanan Pos Pembinaan Terpadu (Posbindu) Kartika.\n\n${rincianJam}`,
     },
   ];
 }
 
 const pengaturan = {
   namaFaskes: "Puskesmas Banjar Agung",
-  jamPelayanan: "08.00 – 15.00",
-  hariPelayanan: "Senin – Jumat",
+  jamPelayanan: "08.00 – 12.00",
+  hariPelayanan: "Lansia, Balita & Bumil/Usia Produktif",
   kontakTelepon: "(0721) 123-456",
   kontakWhatsapp: "6281234567890",
   sebelumBerkunjung:
-    "Siapkan KTP atau kartu BPJS serta dokumen pemeriksaan sebelumnya.\nJadwal dapat berubah. Konfirmasikan kepada petugas sebelum datang.",
+    "Jam Pelayanan:\n• LANSIA: 08.00 – 09.30 WIB\n• BALITA: 09.30 – 11.00 WIB\n• BUMIL / Apras / Remaja / Usia Produktif: 11.00 – 12.00 WIB\n\nSiapkan KTP atau kartu BPJS serta buku KIA/dokumen pemeriksaan sebelumnya.",
 };
 
 export function createSeed() {
