@@ -9,7 +9,10 @@ import { readLocalDb } from "@/lib/serverDb";
 export async function POST(request) {
   try {
     const { email, password } = await request.json();
-    const cleanEmail = (email || "").trim().toLowerCase();
+    const rawEmail = (email || "").trim().toLowerCase();
+    // Dukung login admin menggunakan admin@posyandu.id maupun admin@puskesmas.id
+    const cleanEmail =
+      rawEmail === "admin@posyandu.id" ? "admin@puskesmas.id" : rawEmail;
 
     if (!cleanEmail || !password) {
       return NextResponse.json(
