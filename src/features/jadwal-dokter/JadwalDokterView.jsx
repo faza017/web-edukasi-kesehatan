@@ -59,10 +59,7 @@ export default function JadwalDokterView() {
 
   const q = query.trim().toLowerCase();
   const rows = jadwalPublik(data.jadwalDokter, selectedIso).filter((j) => {
-    const matchName =
-      !q ||
-      j.dokterNama.toLowerCase().includes(q) ||
-      j.spesialisasi.toLowerCase().includes(q);
+    const matchName = !q || j.dokterNama.toLowerCase().includes(q);
     const matchPoli = poli === "all" || poliDariLokasi(j.lokasi) === poli;
     const matchSesi = sesi === "all" || sesiJam(j.jamMulai) === sesi;
     return matchName && matchPoli && matchSesi;
@@ -173,11 +170,10 @@ export default function JadwalDokterView() {
       {/* Tabel Jadwal (JDW-5, JDW-6) */}
       {rows.length > 0 ? (
         <Card className="overflow-hidden">
-          <div className="hidden grid-cols-[1.6fr_1.1fr_1.1fr_1fr_110px] items-center bg-brand-50 px-5 py-3 text-[11px] font-semibold text-brand-900 md:grid">
+          <div className="hidden grid-cols-[1.6fr_1.1fr_1.2fr_110px] items-center bg-brand-50 px-5 py-3 text-[11px] font-semibold text-brand-900 md:grid">
             <span>Nama dokter</span>
-            <span>Poli / layanan</span>
             <span>Jam praktik</span>
-            <span>Lokasi</span>
+            <span>Lokasi / Poli</span>
             <span>Status</span>
           </div>
           <div className="divide-y divide-line">
@@ -186,17 +182,16 @@ export default function JadwalDokterView() {
               return (
                 <div
                   key={j.id}
-                  className="grid gap-2 px-5 py-4 md:grid-cols-[1.6fr_1.1fr_1.1fr_1fr_110px] md:items-center"
+                  className="grid gap-2 px-5 py-4 md:grid-cols-[1.6fr_1.1fr_1.2fr_110px] md:items-center"
                 >
                   <div>
                     <p className="text-[13px] font-semibold text-brand-900">{j.dokterNama}</p>
                     <p className="mt-1 text-[10px] text-muted">{data.pengaturan.namaFaskes}</p>
                   </div>
-                  <p className="text-xs text-brand-900">{j.spesialisasi}</p>
                   <p className="text-xs font-semibold text-brand-900">
                     {formatTimeRange(j.jamMulai, j.jamSelesai)}
                   </p>
-                  <p className="text-xs text-muted">{poliDariLokasi(j.lokasi)}</p>
+                  <p className="text-xs text-muted">{j.lokasi}</p>
                   <div>
                     <Badge tone={st.tone} className="min-w-[94px] justify-center">
                       {st.userLabel}

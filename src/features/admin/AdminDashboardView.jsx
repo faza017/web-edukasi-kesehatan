@@ -23,7 +23,10 @@ export default function AdminDashboardView() {
     (j) => j.status !== "tidak_aktif"
   );
 
-  const spesialisNote = [...new Set(dokterList.map((d) => d.spesialisasi))].slice(0, 2).join(", ");
+  const poliNote = [...new Set(data.jadwalDokter.map((j) => j.lokasi.split(/\s[—–-]\s/)[0]))]
+    .filter(Boolean)
+    .slice(0, 2)
+    .join(", ");
   const terbaru = [...data.jurnal]
     .sort((a, b) => (b.tanggalTerbit || "0").localeCompare(a.tanggalTerbit || "0"))
     .slice(0, 3);
@@ -51,7 +54,7 @@ export default function AdminDashboardView() {
           <p className="text-[11px] text-muted">Dokter terdaftar</p>
           <p className="mt-2 text-2xl font-bold text-brand-900">{dokterList.length}</p>
           <p className="mt-2 truncate text-[10px] text-muted">
-            {spesialisNote || "Belum ada dokter"}
+            {poliNote || "Tersedia di puskesmas"}
           </p>
         </Card>
         <Card className="p-4">
@@ -170,7 +173,7 @@ export default function AdminDashboardView() {
                     <div key={j.id} className="flex items-center justify-between gap-3 py-3.5 first:pt-0">
                       <div>
                         <p className="text-xs font-semibold text-brand-900">{j.dokterNama}</p>
-                        <p className="mt-1 text-[11px] text-muted">{j.spesialisasi}</p>
+                        <p className="mt-1 text-[11px] text-muted">{j.lokasi}</p>
                         <p className="mt-1 text-[11px] font-semibold text-brand-900">
                           {formatTimeRange(j.jamMulai, j.jamSelesai)}
                         </p>

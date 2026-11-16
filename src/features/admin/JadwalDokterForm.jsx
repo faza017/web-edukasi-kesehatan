@@ -17,10 +17,10 @@ import {
   useData,
 } from "@/services/dataService";
 import { HARI_SENIN_DULU, dayName, timeToMinutes } from "@/lib/date";
+import { poliDariLokasi } from "@/lib/selectors";
 
 const INITIAL = {
   dokterNama: "",
-  spesialisasi: "",
   hari: "",
   tanggal: "",
   jamMulai: "09:00",
@@ -30,7 +30,7 @@ const INITIAL = {
   status: "aktif",
 };
 
-/** Frame 07 — Tambah / Edit Jadwal Dokter (PRD KD-2 s/d KD-6). */
+/** Frame 07 — Tambah / Edit Jadwal Dokter (Tanpa kolom Spesialisasi). */
 export default function JadwalDokterForm({ editId }) {
   const data = useData();
   const router = useRouter();
@@ -42,7 +42,6 @@ export default function JadwalDokterForm({ editId }) {
     existing
       ? {
           dokterNama: existing.dokterNama,
-          spesialisasi: existing.spesialisasi,
           hari: existing.hari || "",
           tanggal: existing.tanggal || "",
           jamMulai: existing.jamMulai,
@@ -89,7 +88,6 @@ export default function JadwalDokterForm({ editId }) {
   const validate = () => {
     const next = {};
     if (!values.dokterNama.trim()) next.dokterNama = "Nama dokter wajib diisi.";
-    if (!values.spesialisasi.trim()) next.spesialisasi = "Spesialisasi wajib diisi.";
     if (!values.hari && !values.tanggal) next.hari = "Pilih hari praktik atau tanggal spesifik.";
     if (!values.jamMulai) next.jamMulai = "Jam mulai wajib diisi.";
     if (!values.jamSelesai) next.jamSelesai = "Jam selesai wajib diisi.";
@@ -134,7 +132,7 @@ export default function JadwalDokterForm({ editId }) {
 
     const payload = {
       dokterNama: values.dokterNama.trim(),
-      spesialisasi: values.spesialisasi.trim(),
+      spesialisasi: poliDariLokasi(values.lokasi) || "Umum",
       hari: values.tanggal ? dayName(values.tanggal) : values.hari,
       tanggal: values.tanggal || null,
       jamMulai: values.jamMulai,
@@ -166,31 +164,17 @@ export default function JadwalDokterForm({ editId }) {
         <p className="mt-1 text-xs text-muted">Masukkan data dokter dan waktu praktik.</p>
 
         <form onSubmit={onSubmit} noValidate className="mt-6 space-y-5">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="Nama Dokter" htmlFor="dokterNama" error={errors.dokterNama}>
-              <Input
-                id="dokterNama"
-                name="dokterNama"
-                autoComplete="off"
-                placeholder="dr. Nama Lengkap"
-                value={values.dokterNama}
-                onChange={onChange}
-                error={errors.dokterNama}
-              />
-            </Field>
-
-            <Field label="Spesialisasi" htmlFor="spesialisasi" error={errors.spesialisasi}>
-              <Input
-                id="spesialisasi"
-                name="spesialisasi"
-                autoComplete="off"
-                placeholder="Contoh: Dokter Umum"
-                value={values.spesialisasi}
-                onChange={onChange}
-                error={errors.spesialisasi}
-              />
-            </Field>
-          </div>
+          <Field label="Nama Dokter" htmlFor="dokterNama" error={errors.dokterNama}>
+            <Input
+              id="dokterNama"
+              name="dokterNama"
+              autoComplete="off"
+              placeholder="dr. Nama Lengkap"
+              value={values.dokterNama}
+              onChange={onChange}
+              error={errors.dokterNama}
+            />
+          </Field>
 
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <Field label="Hari Praktik" htmlFor="hari" error={errors.hari}>
@@ -311,4 +295,3 @@ export default function JadwalDokterForm({ editId }) {
     </>
   );
 }
-

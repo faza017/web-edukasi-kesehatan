@@ -31,10 +31,7 @@ export default function AdminJadwalDokterListView() {
   const q = query.trim().toLowerCase();
 
   const list = data.jadwalDokter.filter((j) => {
-    const matchQ =
-      !q ||
-      j.dokterNama.toLowerCase().includes(q) ||
-      j.spesialisasi.toLowerCase().includes(q);
+    const matchQ = !q || j.dokterNama.toLowerCase().includes(q);
     const matchHari = hari === "all" || j.hari === hari;
     const matchPoli = poli === "all" || poliDariLokasi(j.lokasi) === poli;
     return matchQ && matchHari && matchPoli;
@@ -76,7 +73,7 @@ export default function AdminJadwalDokterListView() {
       <div className="mt-4 grid gap-3 sm:grid-cols-[1fr_180px_190px]">
         <Input
           type="search"
-          placeholder="Cari nama dokter atau spesialisasi..."
+          placeholder="Cari nama dokter..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           aria-label="Cari jadwal dokter"
@@ -102,7 +99,7 @@ export default function AdminJadwalDokterListView() {
       {list.length > 0 ? (
         <Card className="mt-4 overflow-hidden">
           <div className="hidden grid-cols-[1.5fr_1fr_1.1fr_1.1fr_95px_200px] bg-brand-50 px-5 py-3 text-[11px] font-semibold text-brand-900 md:grid">
-            <span>Dokter & Spesialisasi</span>
+            <span>Nama Dokter</span>
             <span>Hari / Tanggal</span>
             <span>Jam Praktik</span>
             <span>Lokasi & Kuota</span>
@@ -120,7 +117,6 @@ export default function AdminJadwalDokterListView() {
                 >
                   <div>
                     <p className="text-xs font-semibold text-brand-900">{j.dokterNama}</p>
-                    <p className="mt-0.5 text-[11px] text-muted">{j.spesialisasi}</p>
                   </div>
                   <div className="text-xs text-slate-700">
                     <span className="font-semibold text-brand-900">{j.hari}</span>

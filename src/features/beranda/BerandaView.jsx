@@ -50,7 +50,9 @@ export default function BerandaView() {
   const pilihan = jurnalTerbit(data.jurnal).slice(0, 3);
   const jadwalHariIni = jadwalPublik(data.jadwalDokter, today);
   const praktik = jadwalHariIni.filter((j) => j.status !== "dibatalkan");
-  const spesialis = [...new Set(praktik.map((j) => j.spesialisasi))];
+  const poliList = [...new Set(praktik.map((j) => (j.lokasi || "").split(/\s[—–-]\s/)[0]))].filter(
+    Boolean
+  );
 
   return (
     <>
@@ -80,7 +82,7 @@ export default function BerandaView() {
         <StatCard
           label="Praktik hari ini"
           value={`${praktik.length} dokter`}
-          note={spesialis.length ? spesialis.join(", ") : "Tidak ada praktik"}
+          note={poliList.length ? poliList.join(", ") : "Tidak ada praktik"}
         />
         <StatCard
           label="Jam pelayanan"
@@ -114,7 +116,7 @@ export default function BerandaView() {
                 <Card key={j.id} className="flex items-start justify-between gap-4 px-4 py-4">
                   <div>
                     <p className="text-[13px] font-semibold text-brand-900">{j.dokterNama}</p>
-                    <p className="mt-3 text-[11px] text-muted">{j.spesialisasi}</p>
+                    <p className="mt-3 text-[11px] text-muted">{j.lokasi}</p>
                     <p className="mt-2.5 text-[11px] font-medium text-brand-900">
                       {formatTimeRange(j.jamMulai, j.jamSelesai)}
                     </p>
