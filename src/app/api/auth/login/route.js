@@ -9,10 +9,7 @@ import { readLocalDb } from "@/lib/serverDb";
 export async function POST(request) {
   try {
     const { email, password } = await request.json();
-    const rawEmail = (email || "").trim().toLowerCase();
-    // Dukung login admin menggunakan admin@posyandu.id maupun admin@puskesmas.id
-    const cleanEmail =
-      rawEmail === "admin@posyandu.id" ? "admin@puskesmas.id" : rawEmail;
+    const cleanEmail = (email || "").trim().toLowerCase();
 
     if (!cleanEmail || !password) {
       return NextResponse.json(
@@ -23,12 +20,16 @@ export async function POST(request) {
 
     const sb = getServerSupabase();
     if (sb) {
-      // 1. Cek di tabel public.users
-      const { data: userRow, error } = await sb
+      // 1. Cek di tabel public.users (dukung admin@posyandu.id maupun admin@puskesmas.id)
+      const isAdminAlias =
+        cleanEmail === "admin@posyandu.id" || cleanEmail === "admin@puskesmas.id";
+      const query = sb
         .from("users")
-        .select("id, nama, email, password_hash, peran")
-        .ilike("email", cleanEmail)
-        .maybeSingle();
+        .select("id, nama, email, password_hash, peran");
+
+      const { data: userRow, error } = await (isAdminAlias
+        ? query.in("email", ["admin@posyandu.id", "admin@puskesmas.id"]).limit(1).maybeSingle()
+        : query.ilike("email", cleanEmail).maybeSingle());
 
       if (!error && userRow) {
         if (userRow.password_hash === "GOOGLE_OAUTH") {

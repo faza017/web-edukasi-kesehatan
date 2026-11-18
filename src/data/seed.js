@@ -7,7 +7,7 @@ import { todayISO } from "@/lib/date";
 
 export const DEMO_ACCOUNTS = [
   { email: "user@email.com", password: "user123", label: "Pengguna" },
-  { email: "admin@puskesmas.id", password: "admin123", label: "Administrator" },
+  { email: "admin@posyandu.id", password: "admin123", label: "Administrator" },
 ];
 
 const users = [
@@ -22,7 +22,7 @@ const users = [
   {
     id: "u-2",
     nama: "Petugas Posyandu",
-    email: "admin@puskesmas.id",
+    email: "admin@posyandu.id",
     password: "admin123",
     peran: "admin",
   },
