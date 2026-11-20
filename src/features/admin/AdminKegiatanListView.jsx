@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { ExternalLink, MapPin, Pencil, Plus, Trash2 } from "lucide-react";
 import PageHeader from "@/components/layout/PageHeader";
 import Badge from "@/components/ui/Badge";
 import Button from "@/components/ui/Button";
@@ -14,7 +14,7 @@ import Loader from "@/components/ui/Loader";
 import { useToast } from "@/components/ui/Toast";
 import { deleteKegiatan, useData } from "@/services/dataService";
 import { formatShort, formatTimeRange } from "@/lib/date";
-import { JENIS_KEGIATAN } from "@/lib/selectors";
+import { JENIS_KEGIATAN, unpackLokasiMaps } from "@/lib/selectors";
 
 /** Kelola Kegiatan (Tabel + Filter + Aksi Edit/Hapus — PRD KK-1). */
 export default function AdminKegiatanListView() {
@@ -93,6 +93,7 @@ export default function AdminKegiatanListView() {
           <div className="divide-y divide-line">
             {list.map((k) => {
               const info = JENIS_KEGIATAN[k.jenis] || JENIS_KEGIATAN.seminar;
+              const { lokasi, mapsUrl } = unpackLokasiMaps(k.lokasi, k.mapsUrl);
               return (
                 <div
                   key={k.id}
@@ -112,7 +113,17 @@ export default function AdminKegiatanListView() {
                     </span>
                   </div>
                   <div className="text-xs">
-                    <span className="text-slate-700">{k.lokasi}</span>
+                    <span className="text-slate-700">{lokasi}</span>
+                    {mapsUrl && (
+                      <a
+                        href={mapsUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-0.5 inline-flex items-center gap-1 text-[10px] font-semibold text-brand-700 hover:underline"
+                      >
+                        <MapPin size={11} /> Lihat Maps <ExternalLink size={10} />
+                      </a>
+                    )}
                     <span className="block text-[10px] text-muted">Kuota {k.kuota} peserta</span>
                   </div>
                   <div className="flex items-center justify-end gap-2">

@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" fill="none">
+  <defs>
+    <linearGradient id="bgLansia" x1="0" y1="0" x2="800" y2="450" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FCE7F3"/>
+      <stop offset="0.5" stop-color="#FBCFE8"/>
+      <stop offset="1" stop-color="#F9A8D4"/>
+    </linearGradient>
+    <linearGradient id="accentLansia" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#EC4899"/>
+      <stop offset="1" stop-color="#BE185D"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="450" fill="url(#bgLansia)"/>
+  <circle cx="710" cy="80" r="140" fill="#FFFFFF" fill-opacity="0.45"/>
+  <circle cx="90" cy="390" r="160" fill="#F472B6" fill-opacity="0.25"/>
+  <!-- Medical Heart & Pulse -->
+  <path d="M400 325C400 325 270 245 270 160C270 118 303 85 345 85C370 85 391 98 400 117C409 98 430 85 455 85C497 85 530 118 530 160C530 245 400 325 400 325Z" fill="url(#accentLansia)" opacity="0.16"/>
+  <!-- Elderly Couple / Care Icon Illustration -->
+  <rect x="295" y="105" width="210" height="210" rx="105" fill="#FFFFFF" stroke="#F472B6" stroke-width="6"/>
+  <!-- Left Senior Figure -->
+  <circle cx="368" cy="175" r="24" fill="#F9A8D4"/>
+  <path d="M348 164C348 150 357 141 368 141C379 141 388 150 388 164" stroke="#9D174D" stroke-width="6" stroke-linecap="round"/>
+  <path d="M332 252C332 226 348 210 368 210C388 210 404 226 404 252" fill="#EC4899"/>
+  <!-- Right Senior Figure -->
+  <circle cx="432" cy="180" r="22" fill="#F472B6"/>
+  <circle cx="445" cy="162" r="8" fill="#9D174D"/>
+  <path d="M400 252C400 229 415 214 432 214C449 214 464 229 464 252" fill="#BE185D"/>
+  <!-- Heart Badge above -->
+  <path d="M400 148C400 148 382 135 382 123C382 116 387 111 394 111C397 111 399 113 400 115C401 113 403 111 406 111C413 111 418 116 418 123C418 135 400 148 400 148Z" fill="#EC4899"/>
+  <!-- ECG Pulse Line -->
+  <path d="M180 365H330L352 335L378 392L404 320L426 378L445 365H620" stroke="#BE185D" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

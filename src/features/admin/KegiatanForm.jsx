@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, MapPin } from "lucide-react";
 import PageHeader from "@/components/layout/PageHeader";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
@@ -12,6 +12,7 @@ import Loader from "@/components/ui/Loader";
 import { useToast } from "@/components/ui/Toast";
 import { createKegiatan, updateKegiatan, useData } from "@/services/dataService";
 import { timeToMinutes, todayISO } from "@/lib/date";
+import { unpackLokasiMaps } from "@/lib/selectors";
 
 const INITIAL = {
   nama: "",
@@ -21,11 +22,12 @@ const INITIAL = {
   waktuMulai: "09:00",
   waktuSelesai: "12:00",
   lokasi: "",
+  mapsUrl: "",
   kuota: "50",
   deskripsi: "",
 };
 
-/** Frame 08 — Tambah / Edit Jadwal Kegiatan (PRD KK-2 s/d KK-4). */
+/** Frame 08 — Tambah / Edit Jadwal Kegiatan dilengkapi input Link Google Maps. */
 export default function KegiatanForm({ editId }) {
   const data = useData();
   const router = useRouter();
@@ -33,21 +35,22 @@ export default function KegiatanForm({ editId }) {
 
   const existing = editId && data ? data.kegiatan.find((k) => k.id === editId) : null;
 
-  const [values, setValues] = useState(() =>
-    existing
-      ? {
-          nama: existing.nama,
-          jenis: existing.jenis,
-          penyelenggara: existing.penyelenggara,
-          tanggal: existing.tanggal,
-          waktuMulai: existing.waktuMulai,
-          waktuSelesai: existing.waktuSelesai,
-          lokasi: existing.lokasi,
-          kuota: String(existing.kuota),
-          deskripsi: existing.deskripsi || "",
-        }
-      : INITIAL
-  );
+  const [values, setValues] = useState(() => {
+    if (!existing) return INITIAL;
+    const unpacked = unpackLokasiMaps(existing.lokasi, existing.mapsUrl);
+    return {
+      nama: existing.nama,
+      jenis: existing.jenis,
+      penyelenggara: existing.penyelenggara,
+      tanggal: existing.tanggal,
+      waktuMulai: existing.waktuMulai,
+      waktuSelesai: existing.waktuSelesai,
+      lokasi: unpacked.lokasi,
+      mapsUrl: unpacked.mapsUrl,
+      kuota: String(existing.kuota),
+      deskripsi: existing.deskripsi || "",
+    };
+  });
   const [errors, setErrors] = useState({});
 
   if (!data) return <Loader />;
@@ -82,7 +85,6 @@ export default function KegiatanForm({ editId }) {
     if (!values.tanggal) {
       next.tanggal = "Tanggal kegiatan wajib diisi.";
     } else if (!existing && values.tanggal < todayISO()) {
-      // PRD KK-3: tanggal tidak boleh di masa lalu (saat membuat)
       next.tanggal = "Tanggal kegiatan tidak boleh di masa lalu.";
     }
     if (!values.waktuMulai) next.waktuMulai = "Waktu mulai wajib diisi.";
@@ -94,7 +96,10 @@ export default function KegiatanForm({ editId }) {
     ) {
       next.waktuSelesai = "Waktu selesai harus lebih besar dari waktu mulai.";
     }
-    if (!values.lokasi.trim()) next.lokasi = "Lokasi kegiatan wajib diisi.";
+    if (!values.lokasi.trim()) next.lokasi = "Nama tempat / lokasi kegiatan wajib diisi.";
+    if (values.mapsUrl.trim() && !/^https?:\/\//i.test(values.mapsUrl.trim())) {
+      next.mapsUrl = "Link Google Maps harus diawali http:// atau https://";
+    }
     const kuotaNum = parseInt(values.kuota, 10);
     if (Number.isNaN(kuotaNum) || kuotaNum < 1) {
       next.kuota = "Kuota peserta minimal 1.";
@@ -117,13 +122,14 @@ export default function KegiatanForm({ editId }) {
       waktuMulai: values.waktuMulai,
       waktuSelesai: values.waktuSelesai,
       lokasi: values.lokasi.trim(),
+      mapsUrl: values.mapsUrl.trim(),
       kuota: parseInt(values.kuota, 10),
       deskripsi: values.deskripsi.trim(),
     };
 
     if (existing) {
       updateKegiatan(existing.id, payload);
-      toast("Jadwal kegiatan berhasil diperbarui.");
+      toast("Jadwal kegiatan & lokasi Google Maps berhasil diperbarui.");
     } else {
       createKegiatan(payload);
       toast("Jadwal kegiatan baru berhasil disimpan.");
@@ -135,13 +141,13 @@ export default function KegiatanForm({ editId }) {
     <>
       <PageHeader
         title={existing ? "Edit Jadwal Kegiatan" : "Tambah Jadwal Kegiatan"}
-        subtitle="Buat dan atur kegiatan kesehatan yang akan ditampilkan kepada pengguna."
+        subtitle="Buat dan atur kegiatan kesehatan beserta tautan lokasi Google Maps."
       />
 
       <Card className="p-6 sm:p-8">
         <h2 className="text-base font-bold text-brand-900">Informasi Kegiatan</h2>
         <p className="mt-1 text-xs text-muted">
-          Lengkapi detail kegiatan kesehatan yang ingin dijadwalkan.
+          Lengkapi detail kegiatan kesehatan dan link Google Maps yang ingin dijadwalkan.
         </p>
 
         <form onSubmit={onSubmit} noValidate className="mt-6 space-y-5">
@@ -149,7 +155,7 @@ export default function KegiatanForm({ editId }) {
             <Input
               id="nama"
               name="nama"
-              placeholder="Contoh: Seminar Pola Hidup Sehat"
+              placeholder="Contoh: Kelas BUMIL & Kelas BALITA"
               value={values.nama}
               onChange={onChange}
               error={errors.nama}
@@ -175,7 +181,7 @@ export default function KegiatanForm({ editId }) {
               <Input
                 id="penyelenggara"
                 name="penyelenggara"
-                placeholder="Nama instansi atau penanggung jawab"
+                placeholder="Nama bidan / penanggung jawab"
                 value={values.penyelenggara}
                 onChange={onChange}
                 error={errors.penyelenggara}
@@ -219,11 +225,11 @@ export default function KegiatanForm({ editId }) {
           </div>
 
           <div className="grid gap-4 sm:grid-cols-[1.5fr_1fr]">
-            <Field label="Lokasi Kegiatan" htmlFor="lokasi" error={errors.lokasi}>
+            <Field label="Nama Tempat / Lokasi Kegiatan" htmlFor="lokasi" error={errors.lokasi}>
               <Input
                 id="lokasi"
                 name="lokasi"
-                placeholder="Contoh: Aula Utama / Ruang Serbaguna"
+                placeholder="Contoh: Perum Polda / Posyandu Kartika"
                 value={values.lokasi}
                 onChange={onChange}
                 error={errors.lokasi}
@@ -243,6 +249,29 @@ export default function KegiatanForm({ editId }) {
               />
             </Field>
           </div>
+
+          <Field
+            label="Link Google Maps Lokasi"
+            htmlFor="mapsUrl"
+            error={errors.mapsUrl}
+            hint="Masukkan tautan Google Maps (mis. https://maps.app.goo.gl/... atau https://www.google.com/maps/...) agar warga bisa klik tombol 'Lihat Lokasi'."
+          >
+            <div className="relative">
+              <span className="pointer-events-none absolute inset-y-0 left-0 flex w-10 items-center justify-center text-brand-700">
+                <MapPin size={16} />
+              </span>
+              <Input
+                id="mapsUrl"
+                name="mapsUrl"
+                type="url"
+                placeholder="https://maps.app.goo.gl/... atau https://www.google.com/maps/..."
+                value={values.mapsUrl}
+                onChange={onChange}
+                error={errors.mapsUrl}
+                className="pl-10"
+              />
+            </div>
+          </Field>
 
           <Field label="Deskripsi Kegiatan" htmlFor="deskripsi" error={errors.deskripsi}>
             <Textarea
@@ -274,9 +303,8 @@ export default function KegiatanForm({ editId }) {
         >
           <ArrowLeft size={14} /> Kembali ke dashboard admin
         </Link>
-        <span>Kegiatan terjadwal akan tampil di halaman pengguna.</span>
+        <span>Kegiatan terjadwal beserta tombol Lihat Lokasi akan tampil di halaman pengguna.</span>
       </div>
     </>
   );
 }
-

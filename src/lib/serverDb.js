@@ -59,6 +59,15 @@ function mapJadwalRow(r) {
 }
 
 function mapKegiatanRow(r) {
+  const MAPS_DELIM = "\n[MAPS]:";
+  const rawLokasi = r.lokasi || "";
+  let lokasi = rawLokasi;
+  let mapsUrl = r.maps_url || "";
+  if (rawLokasi.includes(MAPS_DELIM)) {
+    const [lok, url] = rawLokasi.split(MAPS_DELIM);
+    lokasi = lok.trim();
+    mapsUrl = (url || "").trim();
+  }
   return {
     id: r.id,
     nama: r.nama,
@@ -67,7 +76,8 @@ function mapKegiatanRow(r) {
     tanggal: r.tanggal,
     waktuMulai: r.waktu_mulai,
     waktuSelesai: r.waktu_selesai,
-    lokasi: r.lokasi,
+    lokasi,
+    mapsUrl,
     kuota: r.kuota,
     deskripsi: r.deskripsi,
   };

@@ -63,7 +63,12 @@ export default function Sidebar({ variant = "pengguna", onNavigate, onClose, cla
   const telp = data?.pengaturan?.kontakTelepon;
 
   return (
-    <aside className={cn("flex h-full w-[210px] flex-col bg-brand-900 text-white", className)}>
+    <aside
+      className={cn(
+        "flex h-full w-[210px] flex-col bg-gradient-to-b from-[#db2777] via-[#be185d] to-[#831843] text-white shadow-lg",
+        className
+      )}
+    >
       <div className="flex items-start justify-between px-6 pt-5">
         <Brand subtitle={nav.label} />
         {onClose && (
@@ -88,11 +93,20 @@ export default function Sidebar({ variant = "pengguna", onNavigate, onClose, cla
               onClick={onNavigate}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "flex h-[42px] items-center gap-3 rounded-lg px-3.5 text-[13px] transition-colors",
-                active ? "bg-brand-700 font-semibold text-white" : "text-white/80 hover:bg-white/10 hover:text-white"
+                "group flex h-[42px] items-center gap-3 rounded-xl px-3.5 text-[13px] transition-all duration-200 ease-out active:scale-[0.97]",
+                active
+                  ? "bg-white font-bold text-[#be185d] shadow-md shadow-black/10"
+                  : "text-white/90 hover:translate-x-1 hover:bg-white/15 hover:text-white"
               )}
             >
-              <Icon size={16} strokeWidth={1.75} />
+              <Icon
+                size={16}
+                strokeWidth={1.9}
+                className={cn(
+                  "transition-transform duration-200 group-hover:scale-110",
+                  active && "scale-110 text-[#ec4899]"
+                )}
+              />
               {label}
             </Link>
           );

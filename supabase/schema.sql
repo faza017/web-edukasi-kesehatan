@@ -1,6 +1,6 @@
 -- ============================================================================
 -- SKEMA DATABASE POSTGRESQL (SUPABASE)
--- Portal Kesehatan Puskesmas Banjar Agung ("Jurnal & Jadwal Dokter")
+-- Portal Kesehatan Posyandu Banjar Agung ("Jurnal & Jadwal Dokter")
 -- Sesuai PRD Bagian 7 (Model Data)
 -- ============================================================================
 
@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS public.jadwal_dokter (
   status TEXT NOT NULL CHECK (status IN ('aktif', 'penuh', 'dibatalkan', 'tidak_aktif')) DEFAULT 'aktif'
 );
 
--- 6. Tabel KEGIATAN (Jadwal Kegiatan Puskesmas)
+-- 6. Tabel KEGIATAN (Jadwal Kegiatan Posyandu)
 CREATE TABLE IF NOT EXISTS public.kegiatan (
   id TEXT PRIMARY KEY,
   nama TEXT NOT NULL,
@@ -87,7 +87,7 @@ CREATE TABLE IF NOT EXISTS public.pengaturan (
 
 INSERT INTO public.users (id, nama, email, password_hash, peran) VALUES
   ('u-1', 'User', 'user@email.com', 'user123', 'pengguna'),
-  ('u-2', 'Petugas Puskesmas', 'admin@puskesmas.id', 'admin123', 'admin')
+  ('u-2', 'Petugas Posyandu', 'admin@posyandu.id', 'admin123', 'admin')
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public.kategori (id, nama, slug) VALUES
@@ -125,7 +125,7 @@ INSERT INTO public.jadwal_dokter (id, dokter_id, dokter_nama, spesialisasi, hari
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public.pengaturan (kunci, nilai) VALUES
-  ('namaFaskes', 'Puskesmas Banjar Agung'),
+  ('namaFaskes', 'Posyandu Banjar Agung'),
   ('jamPelayanan', '08.00 – 15.00'),
   ('hariPelayanan', 'Senin – Jumat'),
   ('kontakTelepon', '(0721) 123-456'),

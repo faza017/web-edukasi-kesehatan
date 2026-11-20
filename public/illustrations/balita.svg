@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" fill="none">
+  <defs>
+    <linearGradient id="bgBalita" x1="0" y1="0" x2="800" y2="450" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF1F2"/>
+      <stop offset="0.5" stop-color="#FCE7F3"/>
+      <stop offset="1" stop-color="#F9A8D4"/>
+    </linearGradient>
+    <linearGradient id="accentBalita" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#EC4899"/>
+      <stop offset="1" stop-color="#E11D48"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="450" fill="url(#bgBalita)"/>
+  <circle cx="675" cy="95" r="125" fill="#FFFFFF" fill-opacity="0.5"/>
+  <circle cx="130" cy="360" r="145" fill="#F472B6" fill-opacity="0.24"/>
+  <!-- Cute Baby / Toddler Illustration -->
+  <circle cx="400" cy="210" r="112" fill="#FFFFFF" stroke="#F472B6" stroke-width="6"/>
+  <!-- Baby Face -->
+  <circle cx="400" cy="205" r="64" fill="#FCE7F3" stroke="#EC4899" stroke-width="5"/>
+  <!-- Baby Curl Hair -->
+  <path d="M392 142C396 128 414 128 414 142C414 152 400 156 396 148" stroke="#9D174D" stroke-width="6" stroke-linecap="round"/>
+  <!-- Cheeks & Smile -->
+  <circle cx="378" cy="198" r="6" fill="#9D174D"/>
+  <circle cx="422" cy="198" r="6" fill="#9D174D"/>
+  <circle cx="366" cy="212" r="8" fill="#F472B6" opacity="0.6"/>
+  <circle cx="434" cy="212" r="8" fill="#F472B6" opacity="0.6"/>
+  <path d="M386 220C391 228 409 228 414 220" stroke="#9D174D" stroke-width="5" stroke-linecap="round"/>
+  <!-- Stars / Growth Sparkles -->
+  <circle cx="245" cy="195" r="14" fill="url(#accentBalita)" opacity="0.75"/>
+  <circle cx="555" cy="225" r="18" fill="url(#accentBalita)" opacity="0.75"/>
+  <rect x="295" y="352" width="210" height="34" rx="17" fill="#FFFFFF" fill-opacity="0.88"/>
+  <text x="400" y="374" text-anchor="middle" fill="#9D174D" font-family="sans-serif" font-size="15" font-weight="700">TUMBUH KEMBANG BALITA</text>
+</svg>

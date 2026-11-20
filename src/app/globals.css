@@ -1,36 +1,141 @@
 @import "tailwindcss";
 
 /*
- * Design tokens — diambil dari PRD Bagian 9 (Panduan Desain Figma).
- * Pakai sebagai kelas Tailwind: bg-brand-900, text-muted, border-line, dst.
+ * Design tokens — Tema Bright Pink Cerah, Interaktif & Modern untuk Posyandu Desa Banjar Agung.
  */
 @theme inline {
-  --color-brand-900: #14532d; /* Hijau tua: sidebar, panel login, banner, heading */
-  --color-brand-800: #17603a;
-  --color-brand-700: #1f6b4a; /* Hijau primary: tombol, menu aktif, garis kartu */
-  --color-brand-600: #2a7d58;
-  --color-brand-100: #cfeadf;
-  --color-brand-50: #e3f4ee; /* Accent: badge, header tabel */
-  --color-page: #f0f5f2; /* Latar halaman */
-  --color-muted: #5f6f68; /* Teks sekunder */
-  --color-line: #d9e5df; /* Border input & kartu */
+  --color-brand-900: #831843;
+  /* Deep Rose/Magenta gelap: heading kontras tinggi, sidebar */
+  --color-brand-800: #be185d;
+  /* Hover tombol utama */
+  --color-brand-700: #ec4899;
+  /* Bright Pink utama: tombol, menu aktif, aksen kartu */
+  --color-brand-600: #f472b6;
+  /* Bright Pink cerah */
+  --color-brand-100: #fbcfe8;
+  /* Pink muda terang */
+  --color-brand-50: #fce7f3;
+  /* Accent: badge, header tabel */
+  --color-page: #fdf2f8;
+  /* Latar halaman pink lembut cerah */
+  --color-muted: #704258;
+  /* Teks sekunder kontras baik */
+  --color-line: #f5d0e3;
+  /* Border input & kartu */
 
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 html,
 body {
   background: var(--color-page);
-  color: #1b2b24;
+  color: #3b0a21;
 }
 
 body {
   font-family: var(--font-sans);
 }
 
-/* Fokus keyboard yang jelas tanpa membuat double border pada input */
 button:focus-visible,
 a:focus-visible {
   outline: 2px solid var(--color-brand-700);
   outline-offset: 2px;
+}
+
+/* ========================================================================== */
+/* Animasi & Micro-Interactions Halus                                         */
+/* ========================================================================== */
+
+@keyframes fadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(14px) scale(0.99);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes floatSlow {
+
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(-10px) rotate(3deg);
+  }
+}
+
+@keyframes pulseSoft {
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.75;
+  }
+
+  50% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+}
+
+@keyframes shimmerSweep {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(200%);
+  }
+}
+
+.animate-fade-up {
+  animation: fadeUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-float-slow {
+  animation: floatSlow 6s ease-in-out infinite;
+}
+
+.animate-pulse-soft {
+  animation: pulseSoft 3.5s ease-in-out infinite;
+}
+
+.delay-75 {
+  animation-delay: 75ms;
+}
+
+.delay-150 {
+  animation-delay: 150ms;
+}
+
+.delay-225 {
+  animation-delay: 225ms;
+}
+
+/* Efek sentuhan (press & lift) pada kartu interaktif */
+.interactive-card {
+  transition:
+    transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.2s ease;
+}
+
+.interactive-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 32px -12px rgba(236, 72, 153, 0.2);
+  border-color: #f472b6;
+}
+
+.interactive-card:active {
+  transform: translateY(-1px) scale(0.99);
 }

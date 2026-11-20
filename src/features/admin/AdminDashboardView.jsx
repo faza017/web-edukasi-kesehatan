@@ -68,16 +68,16 @@ export default function AdminDashboardView() {
 
       {/* Kartu Aksi Cepat (ADM-2) */}
       <div className="mt-5 grid gap-4 md:grid-cols-2">
-        <div className="flex flex-col justify-between rounded-2xl bg-brand-900 p-6 text-white">
+        <div className="flex flex-col justify-between rounded-2xl bg-gradient-to-r from-[#ec4899] via-[#db2777] to-[#be185d] p-6 text-white shadow-md shadow-pink-500/15">
           <div>
             <h2 className="text-base font-bold">Publikasikan informasi kesehatan</h2>
-            <p className="mt-1.5 text-xs text-white/80">
-              Tambahkan artikel dan berkas jurnal untuk pengguna.
+            <p className="mt-1.5 text-xs text-white/90">
+              Tambahkan artikel dan gambar jurnal untuk pengguna.
             </p>
           </div>
           <Link
             href="/admin/jurnal/tambah"
-            className="mt-5 inline-flex items-center gap-1.5 text-xs font-semibold text-white hover:underline"
+            className="mt-5 inline-flex items-center gap-1.5 text-xs font-bold text-white hover:underline"
           >
             <Plus size={14} /> Tambah jurnal kesehatan
           </Link>

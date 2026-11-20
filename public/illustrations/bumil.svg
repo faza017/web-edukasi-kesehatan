@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" fill="none">
+  <defs>
+    <linearGradient id="bgBumil" x1="0" y1="0" x2="800" y2="450" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FDF2F8"/>
+      <stop offset="0.5" stop-color="#FCE7F3"/>
+      <stop offset="1" stop-color="#F472B6"/>
+    </linearGradient>
+    <linearGradient id="accentBumil" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#F43F5E"/>
+      <stop offset="1" stop-color="#DB2777"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="450" fill="url(#bgBumil)"/>
+  <circle cx="110" cy="90" r="130" fill="#FFFFFF" fill-opacity="0.55"/>
+  <circle cx="690" cy="370" r="150" fill="#EC4899" fill-opacity="0.22"/>
+  <!-- Glowing Halo -->
+  <circle cx="400" cy="215" r="135" fill="#FFFFFF" fill-opacity="0.55"/>
+  <circle cx="400" cy="215" r="108" fill="#FFFFFF" stroke="#EC4899" stroke-width="6"/>
+  <!-- Expectant Mother / Maternal Care Illustration -->
+  <circle cx="395" cy="155" r="24" fill="#F472B6"/>
+  <path d="M372 152C372 135 385 123 402 123C420 123 430 138 430 156C430 168 424 176 418 180" stroke="#9D174D" stroke-width="7" stroke-linecap="round"/>
+  <path d="M360 278C360 226 375 194 398 194C424 194 448 222 448 258C448 270 442 278 432 278H360Z" fill="url(#accentBumil)"/>
+  <!-- Loving Heart on Belly -->
+  <path d="M412 254C412 254 394 241 394 229C394 222 399 217 406 217C409 217 411 219 412 221C413 219 415 217 418 217C425 217 430 222 430 229C430 241 412 254 412 254Z" fill="#FFFFFF"/>
+  <!-- Sparkles & Plus Accents -->
+  <path d="M250 150H274M262 138V162" stroke="#DB2777" stroke-width="6" stroke-linecap="round"/>
+  <path d="M535 170H559M547 158V182" stroke="#DB2777" stroke-width="6" stroke-linecap="round"/>
+  <rect x="295" y="352" width="210" height="34" rx="17" fill="#FFFFFF" fill-opacity="0.85"/>
+  <text x="400" y="374" text-anchor="middle" fill="#9D174D" font-family="sans-serif" font-size="15" font-weight="700">KESEHATAN IBU HAMIL</text>
+</svg>

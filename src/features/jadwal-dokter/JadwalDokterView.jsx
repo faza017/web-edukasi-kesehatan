@@ -100,11 +100,14 @@ export default function JadwalDokterView() {
         </div>
       </div>
 
-      {/* Strip 7 Hari (JDW-2) */}
+      {/* Strip 7 Hari Interaktif (JDW-2) */}
       <div className="mt-4 grid grid-cols-2 gap-2.5 sm:grid-cols-4 lg:grid-cols-7">
         {weekDays.map((iso) => {
           const active = iso === selectedIso;
           const dateNum = String(parseISO(iso).getUTCDate()).padStart(2, "0");
+          const countOnDay = jadwalPublik(data.jadwalDokter, iso).filter(
+            (j) => j.status !== "dibatalkan"
+          ).length;
           return (
             <button
               key={iso}
@@ -112,16 +115,25 @@ export default function JadwalDokterView() {
               onClick={() => setSelectedIso(iso)}
               aria-pressed={active}
               className={cn(
-                "flex h-[74px] flex-col items-center justify-center rounded-xl border transition-colors",
+                "group relative flex h-[78px] cursor-pointer flex-col items-center justify-center rounded-2xl border transition-all duration-200 ease-out hover:-translate-y-1 active:scale-95",
                 active
-                  ? "border-brand-700 bg-brand-700 text-white"
-                  : "border-line bg-white text-brand-900 hover:border-brand-700"
+                  ? "border-brand-700 bg-gradient-to-b from-[#ec4899] to-[#db2777] text-white shadow-md shadow-pink-500/25"
+                  : "border-line bg-white text-brand-900 hover:border-brand-600 hover:shadow-sm"
               )}
             >
-              <span className={cn("text-[11px]", active ? "text-white/90" : "text-muted")}>
+              <span className={cn("text-[11px] font-medium", active ? "text-white/90" : "text-muted")}>
                 {dayName(iso)}
               </span>
-              <span className="mt-1 text-xl font-bold leading-none">{dateNum}</span>
+              <span className="mt-1 text-xl font-extrabold leading-none">{dateNum}</span>
+              {countOnDay > 0 && (
+                <span
+                  title={`${countOnDay} jadwal`}
+                  className={cn(
+                    "mt-1.5 h-1.5 w-1.5 rounded-full",
+                    active ? "bg-white" : "bg-brand-700"
+                  )}
+                />
+              )}
             </button>
           );
         })}

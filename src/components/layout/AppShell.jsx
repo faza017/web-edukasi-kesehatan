@@ -40,7 +40,7 @@ function AppShellInner({ variant = "pengguna", children }) {
         </div>
 
         {/* Top bar mobile/tablet (PRD 8 — sidebar menjadi menu hamburger) */}
-        <header className="sticky top-0 z-30 flex items-center justify-between bg-brand-900 px-4 py-3 lg:hidden">
+        <header className="sticky top-0 z-30 flex items-center justify-between bg-gradient-to-r from-[#ec4899] to-[#be185d] px-4 py-3 shadow-sm lg:hidden">
           <Brand />
           <button
             type="button"
@@ -70,7 +70,14 @@ function AppShellInner({ variant = "pengguna", children }) {
 
         <main className="lg:pl-[210px]">
           <div className="mx-auto w-full max-w-[1000px] px-4 py-6 sm:px-6 lg:px-9 lg:py-7">
-            <div className={!ready || !user || forbidden ? "pointer-events-none opacity-0" : ""}>
+            <div
+              key={pathname}
+              className={
+                !ready || !user || forbidden
+                  ? "pointer-events-none opacity-0"
+                  : "animate-fade-up"
+              }
+            >
               {children}
             </div>
             {(!ready || !user || forbidden) && <Loader label="Memeriksa sesi..." />}

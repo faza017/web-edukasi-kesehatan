@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getAllPortalData, writeLocalDb } from "@/lib/serverDb";
 import { getServerSupabase } from "@/lib/supabase";
 import { createSeed } from "@/data/seed";
-import { poliDariLokasi } from "@/lib/selectors";
+import { packLokasiMaps, poliDariLokasi } from "@/lib/selectors";
 import { slugify } from "@/lib/utils";
 
 /**
@@ -86,7 +86,7 @@ async function seedToSupabase(sb) {
       tanggal: k.tanggal,
       waktu_mulai: k.waktuMulai,
       waktu_selesai: k.waktuSelesai,
-      lokasi: k.lokasi,
+      lokasi: packLokasiMaps(k.lokasi, k.mapsUrl),
       kuota: k.kuota,
       deskripsi: k.deskripsi,
     }))
@@ -196,7 +196,7 @@ export async function POST(request) {
             tanggal: payload.tanggal,
             waktu_mulai: payload.waktuMulai,
             waktu_selesai: payload.waktuSelesai,
-            lokasi: payload.lokasi,
+            lokasi: packLokasiMaps(payload.lokasi, payload.mapsUrl),
             kuota: payload.kuota,
             deskripsi: payload.deskripsi,
           });

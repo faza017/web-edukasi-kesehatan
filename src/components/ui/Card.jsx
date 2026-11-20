@@ -1,11 +1,19 @@
 import { cn } from "@/lib/utils";
 
-/** Kartu putih standar (radius 12–16px, border tipis). */
-export default function Card({ as: Tag = "div", accent = false, className, children, ...props }) {
+/** Kartu putih dengan animasi masuk lembut & efek sentuhan hover. */
+export default function Card({
+  as: Tag = "div",
+  accent = false,
+  interactive = true,
+  className,
+  children,
+  ...props
+}) {
   return (
     <Tag
       className={cn(
-        "rounded-2xl border border-line bg-white",
+        "animate-fade-up rounded-2xl border border-line bg-white shadow-2xs",
+        interactive && "interactive-card",
         accent && "overflow-hidden border-t-[6px] border-t-brand-700",
         className
       )}
@@ -15,4 +23,3 @@ export default function Card({ as: Tag = "div", accent = false, className, child
     </Tag>
   );
 }
-

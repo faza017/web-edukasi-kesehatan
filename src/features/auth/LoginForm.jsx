@@ -41,7 +41,7 @@ function ShieldCrossIcon() {
     <svg width="48" height="52" viewBox="0 0 48 52" fill="none" aria-hidden="true">
       <path
         d="M24 2L6 9.5V24.5C6 36.4 13.7 46.9 24 50C34.3 46.9 42 36.4 42 24.5V9.5L24 2Z"
-        fill="#165B3C"
+        fill="#EC4899"
       />
       <rect x="21" y="15" width="6" height="20" rx="2" fill="#FFFFFF" />
       <rect x="14" y="22" width="20" height="6" rx="2" fill="#FFFFFF" />
@@ -136,11 +136,11 @@ export default function LoginForm() {
 
   return (
     <div className="w-full max-w-[460px]">
-      <div className="rounded-3xl bg-white px-7 py-9 shadow-[0_12px_40px_-12px_rgba(20,83,45,0.12)] sm:px-10 sm:py-10">
+      <div className="rounded-3xl bg-white px-7 py-9 shadow-[0_12px_40px_-12px_rgba(236,72,153,0.18)] sm:px-10 sm:py-10">
         {/* Ikon Perisai Medis & Judul */}
         <div className="flex flex-col items-center text-center">
           <ShieldCrossIcon />
-          <h1 className="mt-3.5 text-2xl font-bold text-[#145336] sm:text-[26px]">
+          <h1 className="mt-3.5 text-2xl font-bold text-brand-900 sm:text-[26px]">
             {mode === "register" ? "Daftar akun baru" : "Selamat datang kembali"}
           </h1>
           <p className="mt-1.5 text-xs text-muted sm:text-[13px]">
@@ -188,7 +188,7 @@ export default function LoginForm() {
                   placeholder="Masukkan nama lengkap"
                   value={values.nama}
                   onChange={onChange}
-                  className={`h-11 w-full rounded-xl border bg-[#f9fbfa] pr-3.5 pl-10 text-sm text-slate-800 placeholder:text-slate-400 focus:border-brand-700 focus:bg-white focus:outline-none ${
+                  className={`h-11 w-full rounded-xl border bg-[#fdf2f8]/60 pr-3.5 pl-10 text-sm text-slate-800 placeholder:text-slate-400 focus:border-brand-700 focus:bg-white focus:outline-none ${
                     errors.nama ? "border-red-400" : "border-line"
                   }`}
                 />
@@ -213,7 +213,7 @@ export default function LoginForm() {
                 placeholder="nama@email.com"
                 value={values.email}
                 onChange={onChange}
-                className={`h-11 w-full rounded-xl border bg-[#f9fbfa] pr-3.5 pl-10 text-sm text-slate-800 placeholder:text-slate-400 focus:border-brand-700 focus:bg-white focus:outline-none ${
+                className={`h-11 w-full rounded-xl border bg-[#fdf2f8]/60 pr-3.5 pl-10 text-sm text-slate-800 placeholder:text-slate-400 focus:border-brand-700 focus:bg-white focus:outline-none ${
                   errors.email ? "border-red-400" : "border-line"
                 }`}
               />
@@ -240,7 +240,7 @@ export default function LoginForm() {
                 placeholder={mode === "register" ? "Minimal 6 karakter" : "Masukkan password"}
                 value={values.password}
                 onChange={onChange}
-                className={`h-11 w-full rounded-xl border bg-[#f9fbfa] pr-11 pl-10 text-sm text-slate-800 placeholder:text-slate-400 focus:border-brand-700 focus:bg-white focus:outline-none ${
+                className={`h-11 w-full rounded-xl border bg-[#fdf2f8]/60 pr-11 pl-10 text-sm text-slate-800 placeholder:text-slate-400 focus:border-brand-700 focus:bg-white focus:outline-none ${
                   errors.password ? "border-red-400" : "border-line"
                 }`}
               />
@@ -260,7 +260,7 @@ export default function LoginForm() {
             <div className="flex justify-end">
               <Link
                 href="/lupa-password"
-                className="text-xs font-semibold text-[#165B3C] hover:underline"
+                className="text-xs font-semibold text-brand-700 hover:underline"
               >
                 Lupa password?
               </Link>
@@ -276,7 +276,7 @@ export default function LoginForm() {
           <button
             type="submit"
             disabled={submitting}
-            className="mt-1 flex h-11 w-full items-center justify-center rounded-xl bg-[#165B3C] px-5 text-sm font-semibold text-white shadow-xs transition-colors hover:bg-[#114930] disabled:opacity-60"
+            className="mt-1 flex h-11 w-full items-center justify-center rounded-xl bg-brand-700 px-5 text-sm font-semibold text-white shadow-sm shadow-pink-500/20 transition-colors hover:bg-brand-800 disabled:opacity-60"
           >
             {submitting
               ? "Memproses..."
@@ -293,7 +293,7 @@ export default function LoginForm() {
               <button
                 type="button"
                 onClick={() => switchMode("register")}
-                className="font-semibold text-[#165B3C] hover:underline"
+                className="font-semibold text-brand-700 hover:underline"
               >
                 Daftar dengan email Anda
               </button>
@@ -304,7 +304,7 @@ export default function LoginForm() {
               <button
                 type="button"
                 onClick={() => switchMode("login")}
-                className="font-semibold text-[#165B3C] hover:underline"
+                className="font-semibold text-brand-700 hover:underline"
               >
                 Masuk di sini
               </button>

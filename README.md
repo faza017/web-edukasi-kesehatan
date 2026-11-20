@@ -14,4 +14,4 @@ Buka [http://localhost:3000](http://localhost:3000) di browser.
 ## Akun Demo
 
 - **Pengguna**: `user@email.com` / `user123`
-- **Administrator**: `admin@puskesmas.id` / `admin123`
+- **Administrator**: `admin@posyandu.id` / `admin123`

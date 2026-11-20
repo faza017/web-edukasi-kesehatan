@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Calendar, Clock, MapPin, Users } from "lucide-react";
+import { Calendar, Clock, ExternalLink, MapPin, Users } from "lucide-react";
 import PageHeader from "@/components/layout/PageHeader";
 import Badge from "@/components/ui/Badge";
 import Button from "@/components/ui/Button";
@@ -12,9 +12,19 @@ import Loader from "@/components/ui/Loader";
 import Modal from "@/components/ui/Modal";
 import { useData } from "@/services/dataService";
 import { formatDate, formatTimeRange, todayISO } from "@/lib/date";
-import { JENIS_KEGIATAN } from "@/lib/selectors";
+import { JENIS_KEGIATAN, unpackLokasiMaps } from "@/lib/selectors";
 
-/** Jadwal Kegiatan Pengguna (PRD 6.5 — KEG-U1 s/d KEG-U4). */
+function resolveMapsHref(lokasi, mapsUrl) {
+  const cleanUrl = (mapsUrl || "").trim();
+  if (cleanUrl) return cleanUrl;
+  const cleanLok = (lokasi || "").trim();
+  if (!cleanLok) return "";
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+    `${cleanLok} Banjar Agung`
+  )}`;
+}
+
+/** Jadwal Kegiatan Pengguna dilengkapi tombol "Lihat Lokasi" menuju Google Maps. */
 export default function JadwalKegiatanView() {
   const data = useData();
   const [tab, setTab] = useState("all");
@@ -68,6 +78,9 @@ export default function JadwalKegiatanView() {
         <div className="mt-5 grid gap-4 sm:grid-cols-2">
           {list.map((k) => {
             const info = JENIS_KEGIATAN[k.jenis] || JENIS_KEGIATAN.seminar;
+            const { lokasi, mapsUrl } = unpackLokasiMaps(k.lokasi, k.mapsUrl);
+            const mapsHref = resolveMapsHref(lokasi, mapsUrl);
+
             return (
               <Card key={k.id} accent className="flex flex-col justify-between p-5">
                 <div>
@@ -93,7 +106,7 @@ export default function JadwalKegiatanView() {
                     </p>
                     <p className="flex items-center gap-2">
                       <MapPin size={14} className="text-brand-700" />
-                      {k.lokasi}
+                      <span>{lokasi}</span>
                     </p>
                     <p className="flex items-center gap-2">
                       <Users size={14} className="text-brand-700" />
@@ -102,7 +115,17 @@ export default function JadwalKegiatanView() {
                   </div>
                 </div>
 
-                <div className="mt-5 pt-3 border-t border-line flex justify-end">
+                <div className="mt-5 flex flex-wrap items-center justify-end gap-2.5 border-t border-line pt-3.5">
+                  {mapsHref && (
+                    <a
+                      href={mapsHref}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-brand-700 px-3 text-xs font-semibold text-white shadow-xs transition-colors hover:bg-brand-800"
+                    >
+                      <MapPin size={13} /> Lihat Lokasi <ExternalLink size={12} />
+                    </a>
+                  )}
                   <Button variant="outline" size="sm" onClick={() => setSelected(k)}>
                     Lihat detail
                   </Button>
@@ -125,40 +148,80 @@ export default function JadwalKegiatanView() {
         onClose={() => setSelected(null)}
         title={selected?.nama || "Detail Kegiatan"}
         footer={
-          <Button variant="primary" onClick={() => setSelected(null)}>
-            Tutup
-          </Button>
+          <div className="flex flex-wrap items-center justify-end gap-2.5">
+            {selected &&
+              (() => {
+                const { lokasi, mapsUrl } = unpackLokasiMaps(
+                  selected.lokasi,
+                  selected.mapsUrl
+                );
+                const href = resolveMapsHref(lokasi, mapsUrl);
+                return href ? (
+                  <a
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex h-10 items-center gap-2 rounded-lg bg-brand-700 px-4 text-sm font-semibold text-white hover:bg-brand-800"
+                  >
+                    <MapPin size={15} /> Lihat Lokasi di Google Maps <ExternalLink size={14} />
+                  </a>
+                ) : null;
+              })()}
+            <Button variant="outline" onClick={() => setSelected(null)}>
+              Tutup
+            </Button>
+          </div>
         }
       >
-        {selected && (
-          <div className="space-y-3 text-xs">
-            <div className="flex flex-wrap gap-2">
-              <Badge tone={JENIS_KEGIATAN[selected.jenis]?.tone} uppercase>
-                {JENIS_KEGIATAN[selected.jenis]?.label || selected.jenis}
-              </Badge>
-              <Badge tone="gray">{selected.penyelenggara}</Badge>
-            </div>
-            <p className="whitespace-pre-line text-sm leading-relaxed text-slate-700">
-              {selected.deskripsi}
-            </p>
-            <div className="rounded-xl bg-brand-50/70 p-3.5 space-y-1.5 text-brand-900">
-              <p>
-                <strong>Tanggal:</strong> {formatDate(selected.tanggal)}
-              </p>
-              <p>
-                <strong>Waktu:</strong> {formatTimeRange(selected.waktuMulai, selected.waktuSelesai)}
-              </p>
-              <p>
-                <strong>Lokasi:</strong> {selected.lokasi}
-              </p>
-              <p>
-                <strong>Kuota Peserta:</strong> {selected.kuota} peserta
-              </p>
-            </div>
-          </div>
-        )}
+        {selected &&
+          (() => {
+            const { lokasi, mapsUrl } = unpackLokasiMaps(
+              selected.lokasi,
+              selected.mapsUrl
+            );
+            return (
+              <div className="space-y-3 text-xs">
+                <div className="flex flex-wrap gap-2">
+                  <Badge tone={JENIS_KEGIATAN[selected.jenis]?.tone} uppercase>
+                    {JENIS_KEGIATAN[selected.jenis]?.label || selected.jenis}
+                  </Badge>
+                  <Badge tone="gray">{selected.penyelenggara}</Badge>
+                </div>
+                <p className="whitespace-pre-line text-sm leading-relaxed text-slate-700">
+                  {selected.deskripsi}
+                </p>
+                <div className="space-y-1.5 rounded-xl bg-brand-50/70 p-3.5 text-brand-900">
+                  <p>
+                    <strong>Tanggal:</strong> {formatDate(selected.tanggal)}
+                  </p>
+                  <p>
+                    <strong>Waktu:</strong>{" "}
+                    {formatTimeRange(selected.waktuMulai, selected.waktuSelesai)}
+                  </p>
+                  <p>
+                    <strong>Lokasi:</strong> {lokasi}
+                  </p>
+                  {mapsUrl && (
+                    <p className="truncate">
+                      <strong>Google Maps:</strong>{" "}
+                      <a
+                        href={mapsUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-semibold text-brand-700 underline"
+                      >
+                        {mapsUrl}
+                      </a>
+                    </p>
+                  )}
+                  <p>
+                    <strong>Kuota Peserta:</strong> {selected.kuota} peserta
+                  </p>
+                </div>
+              </div>
+            );
+          })()}
       </Modal>
     </>
   );
 }
-

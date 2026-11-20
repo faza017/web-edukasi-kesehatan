@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, FileText, Trash2, Upload } from "lucide-react";
+import { ArrowLeft, FileText, ImagePlus, Trash2 } from "lucide-react";
 import PageHeader from "@/components/layout/PageHeader";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
@@ -15,9 +15,9 @@ import { todayISO } from "@/lib/date";
 import { estimateReadMinutes, formatBytes } from "@/lib/utils";
 
 const MAX_FILE_BYTES = 10 * 1024 * 1024; // 10 MB (PRD KJ-3)
-const ALLOWED_EXT = [".pdf", ".docx", ".jpg", ".jpeg", ".png"];
+const ALLOWED_EXT = [".jpg", ".jpeg", ".png", ".webp", ".svg", ".pdf", ".docx"];
 
-/** Frame 06 — Tambah / Edit Jurnal Kesehatan (PRD KJ-2 s/d KJ-7). */
+/** Frame 06 — Tambah / Edit Jurnal Kesehatan dilengkapi Upload Gambar ke Supabase Storage. */
 export default function JurnalForm({ editId }) {
   const data = useData();
   const router = useRouter();
@@ -35,6 +35,7 @@ export default function JurnalForm({ editId }) {
   }));
   const [errors, setErrors] = useState({});
   const [dragging, setDragging] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   if (!data) return <Loader />;
 
@@ -61,7 +62,7 @@ export default function JurnalForm({ editId }) {
     if (!ALLOWED_EXT.includes(ext)) {
       setErrors((er) => ({
         ...er,
-        berkas: "Format berkas harus PDF, DOCX, atau JPG/PNG.",
+        berkas: "Format gambar/berkas harus JPG, PNG, WEBP, SVG, PDF, atau DOCX.",
       }));
       return;
     }
@@ -74,6 +75,7 @@ export default function JurnalForm({ editId }) {
     }
 
     setErrors((er) => ({ ...er, berkas: undefined }));
+    setUploading(true);
 
     // Unggah ke endpoint backend (/api/upload -> Supabase Storage bucket `jurnal-berkas`)
     try {
@@ -83,32 +85,28 @@ export default function JurnalForm({ editId }) {
       const json = await res.json();
       if (res.ok && json.berkas) {
         setValues((v) => ({ ...v, berkas: json.berkas }));
+        setUploading(false);
+        toast("Gambar berhasil diunggah ke penyimpanan server.");
         return;
       }
     } catch {
       // Lanjut ke fallback FileReader di bawah jika gagal
     }
 
-    if (file.size <= 1.5 * 1024 * 1024) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setValues((v) => ({
-          ...v,
-          berkas: {
-            name: file.name,
-            size: file.size,
-            type: file.type,
-            dataUrl: typeof reader.result === "string" ? reader.result : null,
-          },
-        }));
-      };
-      reader.readAsDataURL(file);
-    } else {
+    const reader = new FileReader();
+    reader.onload = () => {
       setValues((v) => ({
         ...v,
-        berkas: { name: file.name, size: file.size, type: file.type, dataUrl: null },
+        berkas: {
+          name: file.name,
+          size: file.size,
+          type: file.type,
+          dataUrl: typeof reader.result === "string" ? reader.result : null,
+        },
       }));
-    }
+      setUploading(false);
+    };
+    reader.readAsDataURL(file);
   };
 
   const validate = () => {
@@ -117,8 +115,10 @@ export default function JurnalForm({ editId }) {
     else if (values.judul.trim().length > 150) next.judul = "Judul maksimal 150 karakter.";
     if (!values.kategoriId) next.kategoriId = "Kategori wajib dipilih.";
     if (!values.penulis.trim()) next.penulis = "Nama penulis wajib diisi.";
-    if (!values.ringkasan.trim()) next.ringkasan = "Ringkasan wajib diisi.";
-    else if (values.ringkasan.trim().length > 200) next.ringkasan = "Ringkasan maksimal 200 karakter.";
+    if (!values.ringkasan.trim()) next.ringkasan = "Deskripsi singkat wajib diisi.";
+    else if (values.ringkasan.trim().length > 200)
+      next.ringkasan = "Deskripsi singkat maksimal 200 karakter.";
+    if (!values.isi.trim()) next.isi = "Isi artikel jurnal wajib diisi.";
     setErrors(next);
     return Object.keys(next).length === 0;
   };
@@ -140,7 +140,7 @@ export default function JurnalForm({ editId }) {
     try {
       if (existing) {
         updateJurnal(existing.id, payload);
-        toast("Perubahan jurnal berhasil disimpan.");
+        toast("Perubahan jurnal berhasil disimpan ke database.");
       } else {
         createJurnal(payload);
         toast(
@@ -155,17 +155,22 @@ export default function JurnalForm({ editId }) {
     }
   };
 
+  const isPreviewImage =
+    values.berkas?.dataUrl &&
+    (values.berkas.type?.startsWith("image/") ||
+      values.berkas.name?.match(/\.(jpg|jpeg|png|webp|svg)$/i));
+
   return (
     <>
       <PageHeader
         title={existing ? "Edit Jurnal Kesehatan" : "Tambah Jurnal Kesehatan"}
-        subtitle="Kelola dan publikasikan artikel informasi kesehatan."
+        subtitle="Kelola dan publikasikan artikel edukasi kesehatan Lansia, Ibu Hamil (Bumil), dan Balita."
       />
 
       <Card className="p-6 sm:p-8">
         <h2 className="text-base font-bold text-brand-900">Informasi Jurnal</h2>
         <p className="mt-1 text-xs text-muted">
-          Lengkapi detail artikel yang ingin ditampilkan di halaman utama.
+          Lengkapi judul, kategori, gambar ilustrasi, deskripsi singkat, dan isi artikel.
         </p>
 
         <form onSubmit={(e) => e.preventDefault()} className="mt-6 space-y-5">
@@ -179,7 +184,7 @@ export default function JurnalForm({ editId }) {
               id="judul"
               name="judul"
               maxLength={150}
-              placeholder="Contoh: Tips Menjaga Pola Tidur"
+              placeholder="Contoh: Panduan MPASI Bergizi Seimbang untuk Balita"
               value={values.judul}
               onChange={onChange}
               error={errors.judul}
@@ -187,7 +192,7 @@ export default function JurnalForm({ editId }) {
           </Field>
 
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="Kategori" htmlFor="kategoriId" error={errors.kategoriId}>
+            <Field label="Kategori Jurnal" htmlFor="kategoriId" error={errors.kategoriId}>
               <Select
                 id="kategoriId"
                 name="kategoriId"
@@ -195,7 +200,7 @@ export default function JurnalForm({ editId }) {
                 onChange={onChange}
                 error={errors.kategoriId}
               >
-                <option value="">Pilih kategori jurnal</option>
+                <option value="">Pilih kategori (Lansia / Ibu Hamil / Balita)</option>
                 {data.kategori.map((k) => (
                   <option key={k.id} value={k.id}>
                     {k.nama}
@@ -208,7 +213,7 @@ export default function JurnalForm({ editId }) {
               <Input
                 id="penulis"
                 name="penulis"
-                placeholder="Nama penulis"
+                placeholder="Nama bidan / petugas kesehatan"
                 value={values.penulis}
                 onChange={onChange}
                 error={errors.penulis}
@@ -217,7 +222,7 @@ export default function JurnalForm({ editId }) {
           </div>
 
           <Field
-            label="Ringkasan Singkat"
+            label="Deskripsi Singkat"
             htmlFor="ringkasan"
             error={errors.ringkasan}
             hint={`Tampil pada kartu jurnal (${values.ringkasan.length}/200 karakter)`}
@@ -226,7 +231,7 @@ export default function JurnalForm({ editId }) {
               id="ringkasan"
               name="ringkasan"
               maxLength={200}
-              placeholder="Contoh: Bangun rutinitas istirahat yang lebih teratur setiap hari."
+              placeholder="Tuliskan ringkasan singkat isi jurnal..."
               value={values.ringkasan}
               onChange={onChange}
               error={errors.ringkasan}
@@ -234,22 +239,29 @@ export default function JurnalForm({ editId }) {
           </Field>
 
           <Field
-            label="Isi Artikel (Opsional)"
+            label="Isi Artikel"
             htmlFor="isi"
-            hint="Tuliskan isi lengkap artikel jika ingin dapat dibaca langsung di halaman detail."
+            error={errors.isi}
+            hint="Tuliskan pembahasan lengkap artikel kesehatan yang akan dibaca warga."
           >
             <Textarea
               id="isi"
               name="isi"
-              rows={5}
-              placeholder="Tuliskan isi artikel edukasi kesehatan..."
+              rows={6}
+              placeholder="Tuliskan isi lengkap artikel edukasi kesehatan..."
               value={values.isi}
               onChange={onChange}
+              error={errors.isi}
             />
           </Field>
 
-          {/* Unggah Berkas Drag & Drop (KJ-3) */}
-          <Field label="Unggah Berkas" htmlFor="berkas-input" error={errors.berkas}>
+          {/* Unggah Gambar / Ilustrasi Jurnal */}
+          <Field
+            label="Unggah Gambar Jurnal (Dari Perangkat)"
+            htmlFor="berkas-input"
+            error={errors.berkas}
+            hint="Jika tidak diunggah, sistem otomatis memakai gambar ilustrasi sesuai kategori (Lansia/Bumil/Balita)."
+          >
             <div
               onDragOver={(e) => {
                 e.preventDefault();
@@ -261,49 +273,69 @@ export default function JurnalForm({ editId }) {
                 setDragging(false);
                 handleFile(e.dataTransfer.files?.[0]);
               }}
-              className={`flex flex-col items-center justify-center rounded-xl border border-dashed px-6 py-8 text-center transition-colors ${dragging
+              className={`flex flex-col items-center justify-center rounded-xl border border-dashed px-6 py-7 text-center transition-colors ${
+                dragging
                   ? "border-brand-700 bg-brand-50"
-                  : "border-line bg-[#f9fcfa] hover:border-brand-700"
-                }`}
+                  : "border-line bg-brand-50/30 hover:border-brand-700"
+              }`}
             >
               <input
                 id="berkas-input"
                 type="file"
-                accept=".pdf,.docx,.jpg,.jpeg,.png"
+                accept="image/*,.jpg,.jpeg,.png,.webp,.svg,.pdf,.docx"
                 className="sr-only"
                 onChange={(e) => handleFile(e.target.files?.[0])}
               />
 
-              {values.berkas ? (
-                <div className="flex flex-wrap items-center gap-3">
-                  <span className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-50 text-brand-700">
-                    <FileText size={18} />
-                  </span>
-                  <div className="text-left">
-                    <p className="text-xs font-semibold text-brand-900">{values.berkas.name}</p>
-                    <p className="text-[11px] text-muted">{formatBytes(values.berkas.size)}</p>
+              {uploading ? (
+                <p className="text-xs font-semibold text-brand-700">
+                  Mengunggah gambar ke Supabase Storage...
+                </p>
+              ) : values.berkas ? (
+                <div className="flex w-full max-w-md flex-col items-center gap-3">
+                  {isPreviewImage && (
+                    <div className="overflow-hidden rounded-xl border border-line bg-white p-1.5 shadow-xs">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={values.berkas.dataUrl}
+                        alt="Preview gambar jurnal"
+                        className="max-h-44 w-auto rounded-lg object-contain"
+                      />
+                    </div>
+                  )}
+                  <div className="flex flex-wrap items-center justify-center gap-3">
+                    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-50 text-brand-700">
+                      <FileText size={16} />
+                    </span>
+                    <div className="text-left">
+                      <p className="text-xs font-semibold text-brand-900">{values.berkas.name}</p>
+                      <p className="text-[11px] text-muted">{formatBytes(values.berkas.size)}</p>
+                    </div>
+                    <label
+                      htmlFor="berkas-input"
+                      className="cursor-pointer rounded-lg border border-line bg-white px-2.5 py-1 text-xs font-semibold text-brand-900 hover:bg-brand-50"
+                    >
+                      Ganti Gambar
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => setValues((v) => ({ ...v, berkas: null }))}
+                      className="inline-flex items-center gap-1 rounded-lg border border-red-200 bg-white px-2.5 py-1 text-xs font-semibold text-red-600 hover:bg-red-50"
+                    >
+                      <Trash2 size={13} /> Hapus
+                    </button>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => setValues((v) => ({ ...v, berkas: null }))}
-                    className="ml-2 inline-flex items-center gap-1 rounded-lg border border-red-200 px-2.5 py-1 text-xs font-semibold text-red-600 hover:bg-red-50"
-                  >
-                    <Trash2 size={13} /> Hapus
-                  </button>
                 </div>
               ) : (
                 <label htmlFor="berkas-input" className="cursor-pointer">
-                  <span className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-brand-50 text-brand-700">
-                    <Upload size={18} />
+                  <span className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-brand-50 text-brand-700">
+                    <ImagePlus size={20} />
                   </span>
                   <p className="mt-3 text-xs font-bold text-brand-900">
-                    Seret dan lepas berkas di sini
+                    Klik untuk memilih gambar dari perangkat atau seret ke sini
                   </p>
                   <p className="mt-1 text-[11px] text-muted">
-                    atau klik untuk memilih file dari perangkat Anda
-                  </p>
-                  <p className="mt-1 text-[10px] text-muted">
-                    Format PDF, DOCX, atau JPG • Maks. 10 MB
+                    Mendukung format JPG, PNG, WEBP, SVG (atau PDF/DOCX) • Maks. 10 MB
                   </p>
                 </label>
               )}
@@ -311,10 +343,10 @@ export default function JurnalForm({ editId }) {
           </Field>
 
           <div className="flex flex-wrap justify-end gap-3 pt-2">
-            <Button variant="outline" onClick={() => save("draft")}>
+            <Button variant="outline" onClick={() => save("draft")} disabled={uploading}>
               Simpan sebagai draft
             </Button>
-            <Button variant="primary" onClick={() => save("terbit")}>
+            <Button variant="primary" onClick={() => save("terbit")} disabled={uploading}>
               Publikasikan jurnal
             </Button>
           </div>
@@ -328,9 +360,8 @@ export default function JurnalForm({ editId }) {
         >
           <ArrowLeft size={14} /> Kembali ke dashboard admin
         </Link>
-        <span>Jurnal terbit akan tampil di halaman pengguna.</span>
+        <span>Jurnal terbit beserta gambarnya langsung tampil di halaman pengguna.</span>
       </div>
     </>
   );
 }
-
