@@ -1,0 +1,26 @@
+! ===== R2 (Router LAN Nirkabel) - KASUS A : DEFAULT ROUTE =====
+! Paste di R2 > CLI (setelah "Would you like to enter the initial configuration dialog?" jawab: no)
+enable
+configure terminal
+hostname R2
+no ip domain-lookup
+banner motd #R2 - T09 124140204 Muhammad Faza Prasetyo#
+!
+interface GigabitEthernet0/0
+ description LAN-NIRKABEL 192.168.10.0/25
+ ip address 192.168.10.1 255.255.255.128
+ ip helper-address 192.168.10.130
+ no shutdown
+ exit
+!
+interface GigabitEthernet0/1
+ description P2P-ke-R1 192.168.10.192/30
+ ip address 192.168.10.194 255.255.255.252
+ no shutdown
+ exit
+!
+! Default route: semua tujuan yang tidak dikenal dilempar ke R1
+ip route 0.0.0.0 0.0.0.0 192.168.10.193
+!
+end
+write memory

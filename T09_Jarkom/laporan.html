@@ -1,0 +1,336 @@
+<!DOCTYPE html><html lang='id'><head><meta charset='utf-8'><style>
+@page { size: A4; margin: 20mm 18mm; }
+body { font-family: 'Times New Roman', serif; font-size: 11.5pt; line-height: 1.45; color:#111; }
+h1 { font-size: 15pt; color:#1f4e79; border-bottom: 2px solid #1f4e79; padding-bottom:3px; margin-top:22px; }
+h2 { font-size: 12.5pt; color:#1f4e79; margin-top:14px; }
+table { border-collapse: collapse; width:100%; margin:8px 0; font-size:10.5pt; page-break-inside: avoid; }
+th, td { border:1px solid #777; padding:4px 6px; vertical-align: top; }
+th { background:#1f4e79; color:#fff; }
+tr:nth-child(even) td { background:#f2f6fb; }
+pre { background:#0f1b2a; color:#d8f3dc; font-family: Consolas, monospace; font-size:8.6pt; padding:8px 10px;
+      border-radius:4px; white-space: pre-wrap; page-break-inside: avoid; }
+figure { margin:10px 0; text-align:center; page-break-inside: avoid; }
+figure img { max-width:100%; max-height:120mm; border:1px solid #aaa; }
+figcaption { font-size:10pt; font-style:italic; color:#444; }
+.ph { border:2px dashed #c00; color:#c00; padding:25px; font-family:Arial; font-size:10pt; }
+.cover { text-align:center; page-break-after: always; padding-top:40mm; }
+.cover h1 { border:none; font-size:20pt; }
+.note { background:#fff4e5; border-left:4px solid #c55a11; padding:6px 10px; font-size:10.5pt; }
+.pb { page-break-before: always; }
+</style></head><body><div class="cover">
+<p style="font-size:13pt;font-weight:bold">LAPORAN ANALISIS TUGAS 09<br/>Jaringan Komputer</p>
+<h1>Perancangan dan Simulasi Arsitektur Jaringan Multi-Router<br/>
+dengan VLSM, DHCP Relay, Routing Statis dan OSPF Area 0<br/>pada Cisco Packet Tracer</h1>
+<p style="margin-top:35mm">Disusun oleh:</p>
+<p style="font-size:13pt"><b>Muhammad Faza Prasetyo</b><br/>NIM 124140204</p>
+<p style="margin-top:35mm"><b>PROGRAM STUDI TEKNIK INFORMATIKA<br/>FAKULTAS TEKNOLOGI INDUSTRI<br/>
+INSTITUT TEKNOLOGI SUMATERA<br/>2026</b></p></div><h1>1. Pendahuluan</h1>
+<p>Tugas ini bertujuan merancang dan menyimulasikan jaringan multi-router yang menggabungkan segmen LAN kabel dan
+LAN nirkabel. Pengalamatan dirancang dengan teknik <i>Variable Length Subnet Mask</i> (VLSM), seluruh client
+memperoleh alamat IP secara otomatis dari sebuah DHCP Server terpusat, dan konektivitas antar-router diuji dalam
+dua skenario: <b>Kasus A</b> menggunakan routing statis + default route, dan <b>Kasus B</b> menggunakan protokol
+routing dinamis <b>OSPF Area 0</b>. Keberhasilan diukur dengan uji <code>ping</code> dan <code>tracert</code> dari
+Laptop nirkabel ke PC kabel hingga mencapai 100% <i>Reply</i>.</p>
+<p>Simulasi dibuat pada Cisco Packet Tracer 9.0.1 dan disimpan dalam dua berkas: <b>KasusA_Static.pkt</b> dan
+<b>KasusB_OSPF.pkt</b>.</p><h1>2. Topologi Jaringan</h1><figure>
+<svg viewBox="0 0 760 430" xmlns="http://www.w3.org/2000/svg" font-family="Arial" font-size="12">
+ <defs><style>.dev{fill:#e8f1fb;stroke:#1f4e79;stroke-width:1.5}.rt{fill:#1f4e79}.t{fill:#fff;font-weight:bold}
+ .ln{stroke:#333;stroke-width:1.6}.wl{stroke:#c55a11;stroke-width:1.4;stroke-dasharray:5 4}.lb{fill:#555;font-size:10.5px}</style></defs>
+ <rect x="20" y="10" width="330" height="410" rx="10" fill="#f3f8ee" stroke="#70ad47" stroke-dasharray="4 3"/>
+ <text x="30" y="28" fill="#385723" font-weight="bold">LAN KABEL 192.168.10.128/26</text>
+ <rect x="410" y="10" width="330" height="410" rx="10" fill="#fdf2ea" stroke="#c55a11" stroke-dasharray="4 3"/>
+ <text x="420" y="28" fill="#843c0c" font-weight="bold">LAN NIRKABEL 192.168.10.0/25</text>
+ <line class="ln" x1="245" y1="70" x2="515" y2="70"/>
+ <text x="300" y="60" class="lb">P2P 192.168.10.192/30</text>
+ <text x="250" y="86" class="lb">G0/1 .193</text><text x="455" y="86" class="lb">.194 G0/1</text>
+ <circle class="rt" cx="215" cy="70" r="28"/><text class="t" x="204" y="75">R1</text>
+ <circle class="rt" cx="545" cy="70" r="28"/><text class="t" x="534" y="75">R2</text>
+ <line class="ln" x1="215" y1="98" x2="215" y2="160"/><text x="222" y="125" class="lb">G0/0 .129</text>
+ <line class="ln" x1="545" y1="98" x2="545" y2="160"/><text x="552" y="125" class="lb">G0/0 .1 (helper .130)</text>
+ <rect class="dev" x="175" y="160" width="80" height="34" rx="4"/><text x="200" y="182">SW1</text>
+ <rect class="dev" x="505" y="160" width="80" height="34" rx="4"/><text x="530" y="182">SW2</text>
+ <line class="ln" x1="195" y1="194" x2="80" y2="290"/><line class="ln" x1="215" y1="194" x2="200" y2="290"/>
+ <line class="ln" x1="235" y1="194" x2="310" y2="290"/>
+ <rect class="dev" x="35" y="290" width="95" height="44" rx="4"/><text x="45" y="308">DHCP-Server</text><text x="45" y="325" class="lb">192.168.10.130</text>
+ <rect class="dev" x="160" y="290" width="80" height="44" rx="4"/><text x="185" y="308">PC1</text><text x="172" y="325" class="lb">DHCP .14x</text>
+ <rect class="dev" x="270" y="290" width="70" height="44" rx="4"/><text x="290" y="308">PC2</text><text x="277" y="325" class="lb">DHCP .14x</text>
+ <line class="ln" x1="545" y1="194" x2="545" y2="245"/>
+ <rect class="dev" x="500" y="245" width="90" height="34" rx="4"/><text x="525" y="267">AP1</text>
+ <text x="598" y="262" class="lb">SSID T09_WIFI (WPA2)</text>
+ <line class="wl" x1="525" y1="279" x2="460" y2="350"/><line class="wl" x1="545" y1="279" x2="575" y2="350"/>
+ <line class="wl" x1="565" y1="279" x2="680" y2="350"/>
+ <rect class="dev" x="420" y="350" width="85" height="44" rx="4"/><text x="435" y="368">Laptop1</text><text x="432" y="385" class="lb">DHCP .1x</text>
+ <rect class="dev" x="535" y="350" width="85" height="44" rx="4"/><text x="550" y="368">Laptop2</text><text x="547" y="385" class="lb">DHCP .1x</text>
+ <rect class="dev" x="640" y="350" width="85" height="44" rx="4"/><text x="650" y="368">Smartphone</text><text x="652" y="385" class="lb">DHCP .1x</text>
+</svg><figcaption>Gambar 1. Rancangan logis topologi jaringan</figcaption></figure><figure><div class="ph">[Screenshot belum ditambahkan: screenshots/topologi.png]</div><figcaption>Gambar 2. Topologi pada Cisco Packet Tracer</figcaption></figure><h2>2.1 Daftar Perangkat</h2>
+<table><tr><th>No</th><th>Perangkat</th><th>Model (Packet Tracer)</th><th>Jumlah</th><th>Fungsi</th></tr>
+<tr><td>1</td><td>Router (R1, R2)</td><td>Cisco 2911</td><td>2</td><td>Gateway tiap LAN, routing antar-subnet</td></tr>
+<tr><td>2</td><td>Switch (SW1, SW2)</td><td>Cisco 2960-24TT</td><td>2</td><td>Konsentrator LAN kabel &amp; uplink AP</td></tr>
+<tr><td>3</td><td>Access Point (AP1)</td><td>AccessPoint-PT</td><td>1</td><td>SSID T09_WIFI, WPA2-PSK/AES</td></tr>
+<tr><td>4</td><td>Server</td><td>Server-PT</td><td>1</td><td>DHCP Server (2 pool) &amp; DNS</td></tr>
+<tr><td>5</td><td>PC Kabel (PC1, PC2)</td><td>PC-PT</td><td>2</td><td>Client LAN kabel</td></tr>
+<tr><td>6</td><td>Laptop Wireless (Laptop1, Laptop2)</td><td>Laptop-PT + WPC300N</td><td>2</td><td>Client LAN nirkabel</td></tr>
+<tr><td>7</td><td>Smartphone (HP1)</td><td>Smartphone-PT</td><td>1</td><td>Client LAN nirkabel</td></tr>
+</table>
+<h2>2.2 Pengkabelan</h2>
+<table><tr><th>Dari</th><th>Port</th><th>Ke</th><th>Port</th><th>Media</th></tr>
+<tr><td>R1</td><td>Gig0/1</td><td>R2</td><td>Gig0/1</td><td>Copper Cross-Over</td></tr>
+<tr><td>R1</td><td>Gig0/0</td><td>SW1</td><td>Gig0/1</td><td>Copper Straight</td></tr>
+<tr><td>SW1</td><td>Fa0/1–Fa0/3</td><td>Server, PC1, PC2</td><td>Fa0</td><td>Copper Straight</td></tr>
+<tr><td>R2</td><td>Gig0/0</td><td>SW2</td><td>Gig0/1</td><td>Copper Straight</td></tr>
+<tr><td>SW2</td><td>Fa0/1</td><td>AP1</td><td>Port 0</td><td>Copper Straight</td></tr>
+<tr><td>AP1</td><td>Port 1 (radio)</td><td>Laptop1, Laptop2, HP1</td><td>Wireless0</td><td>802.11 (WPA2)</td></tr>
+</table><h1 class="pb">3. Perancangan Subnetting VLSM</h1>
+<p>Blok alamat yang digunakan adalah <b>192.168.10.0/24</b>. Pada VLSM, subnet dialokasikan berurutan dari kebutuhan
+host terbesar ke terkecil agar tidak terjadi tumpang-tindih dan pemborosan alamat minimal. Jumlah host per subnet
+dihitung dengan rumus 2<sup>h</sup> &minus; 2 &ge; kebutuhan, dengan h = jumlah bit host.</p>
+<table><tr><th>Segmen</th><th>Kebutuhan Host</th><th>Bit Host (h)</th><th>2<sup>h</sup>&minus;2</th><th>Prefix</th><th>Mask</th></tr>
+<tr><td>LAN Nirkabel</td><td>100</td><td>7</td><td>126</td><td>/25</td><td>255.255.255.128</td></tr>
+<tr><td>LAN Kabel</td><td>50</td><td>6</td><td>62</td><td>/26</td><td>255.255.255.192</td></tr>
+<tr><td>Point-to-Point R1–R2</td><td>2</td><td>2</td><td>2</td><td>/30</td><td>255.255.255.252</td></tr></table>
+<h2>3.1 Hasil Alokasi</h2>
+<table><tr><th>Segmen</th><th>Network</th><th>Host Pertama</th><th>Host Terakhir</th><th>Broadcast</th><th>Wildcard</th></tr>
+<tr><td>LAN Nirkabel</td><td>192.168.10.0/25</td><td>192.168.10.1</td><td>192.168.10.126</td><td>192.168.10.127</td><td>0.0.0.127</td></tr>
+<tr><td>LAN Kabel</td><td>192.168.10.128/26</td><td>192.168.10.129</td><td>192.168.10.190</td><td>192.168.10.191</td><td>0.0.0.63</td></tr>
+<tr><td>P2P R1–R2</td><td>192.168.10.192/30</td><td>192.168.10.193</td><td>192.168.10.194</td><td>192.168.10.195</td><td>0.0.0.3</td></tr>
+<tr><td><i>Sisa (cadangan)</i></td><td>192.168.10.196 – 192.168.10.255</td><td colspan="4"><i>60 alamat belum dipakai, dapat dialokasikan untuk pengembangan</i></td></tr></table>
+<p>Total alamat terpakai 128 + 64 + 4 = 196 dari 256. Dibandingkan FLSM (misal semua /25), VLSM memungkinkan
+link P2P hanya memakan 4 alamat, bukan 128.</p>
+<h2>3.2 Tabel Pengalamatan</h2>
+<table><tr><th>Perangkat</th><th>Interface</th><th>IP Address</th><th>Subnet Mask</th><th>Default Gateway</th></tr>
+<tr><td rowspan="2">R1</td><td>Gig0/0</td><td>192.168.10.129</td><td>255.255.255.192</td><td>–</td></tr>
+<tr><td>Gig0/1</td><td>192.168.10.193</td><td>255.255.255.252</td><td>–</td></tr>
+<tr><td rowspan="2">R2</td><td>Gig0/0</td><td>192.168.10.1</td><td>255.255.255.128</td><td>–</td></tr>
+<tr><td>Gig0/1</td><td>192.168.10.194</td><td>255.255.255.252</td><td>–</td></tr>
+<tr><td>DHCP-Server</td><td>Fa0</td><td>192.168.10.130 (static)</td><td>255.255.255.192</td><td>192.168.10.129</td></tr>
+<tr><td>PC1, PC2</td><td>Fa0</td><td>DHCP (192.168.10.140–189)</td><td>255.255.255.192</td><td>192.168.10.129</td></tr>
+<tr><td>Laptop1, Laptop2, HP1</td><td>Wireless0</td><td>DHCP (192.168.10.10–109)</td><td>255.255.255.128</td><td>192.168.10.1</td></tr></table><h1 class="pb">4. Konfigurasi DHCP Server dan DHCP Relay</h1>
+<p>Server diberi IP statis 192.168.10.130/26 dan layanan DHCP diaktifkan dengan dua pool:</p>
+<table><tr><th>Pool</th><th>Default Gateway</th><th>DNS</th><th>Start IP</th><th>Subnet Mask</th><th>Max User</th></tr>
+<tr><td>LAN_KABEL (serverPool)</td><td>192.168.10.129</td><td>192.168.10.130</td><td>192.168.10.140</td><td>255.255.255.192</td><td>50</td></tr>
+<tr><td>LAN_WIFI</td><td>192.168.10.1</td><td>192.168.10.130</td><td>192.168.10.10</td><td>255.255.255.128</td><td>100</td></tr></table>
+<p>Client pada LAN kabel berada pada broadcast domain yang sama dengan server sehingga paket DHCPDISCOVER langsung
+diterima server. Client nirkabel berada di subnet lain; karena router tidak meneruskan broadcast, interface R2 Gig0/0
+dikonfigurasi <code>ip helper-address 192.168.10.130</code>. R2 bertindak sebagai <b>DHCP Relay Agent</b>: mengubah
+broadcast DHCP menjadi unicast ke server dan mengisi field <i>giaddr</i> = 192.168.10.1. Berdasarkan giaddr tersebut
+server memilih pool <b>LAN_WIFI</b>. Proses DORA (Discover–Offer–Request–Acknowledge) lintas router ini hanya berhasil
+jika routing R1&harr;R2 sudah benar, sehingga keberhasilan DHCP pada client nirkabel sekaligus menjadi indikator awal
+bahwa routing berfungsi.</p><figure><div class="ph">[Screenshot belum ditambahkan: screenshots/dhcp_server.png]</div><figcaption>Gambar 3. Konfigurasi pool DHCP pada Server</figcaption></figure><figure><div class="ph">[Screenshot belum ditambahkan: screenshots/ipconfig_client.png]</div><figcaption>Gambar 4. Client memperoleh IP otomatis dari DHCP Server</figcaption></figure><h2>4.1 Konfigurasi Wireless</h2>
+<p>AP1 dikonfigurasi dengan SSID <b>T09_WIFI</b>, autentikasi <b>WPA2-PSK</b> (enkripsi AES), passphrase
+<code>itera2026</code>. Modul jaringan bawaan Laptop-PT diganti dengan kartu wireless <b>WPC300N</b>. Laptop1,
+Laptop2 dan Smartphone diatur menggunakan SSID dan kunci yang sama dengan mode IP <b>DHCP</b>. AP-PT bekerja sebagai
+<i>bridge</i> Layer 2, sehingga client nirkabel berada pada subnet 192.168.10.0/25 milik R2.</p><h1 class="pb">5. Kasus A – Routing Statis dan Default Route</h1><p>R1 berada di sisi pusat (LAN kabel + server) dan diberi <b>static route</b> spesifik menuju LAN nirkabel.
+R2 berperan sebagai router cabang (<i>stub</i>) yang hanya memiliki satu jalur keluar, sehingga cukup diberi
+<b>default route</b> (0.0.0.0/0) menuju R1.</p><h2>5.1 Konfigurasi R1</h2><pre>! ===== R1 (Router LAN Kabel) - KASUS A : STATIC ROUTE =====
+enable
+configure terminal
+hostname R1
+no ip domain-lookup
+banner motd #R1 - T09 124140204 Muhammad Faza Prasetyo#
+!
+interface GigabitEthernet0/0
+ description LAN-KABEL 192.168.10.128/26
+ ip address 192.168.10.129 255.255.255.192
+ no shutdown
+ exit
+!
+interface GigabitEthernet0/1
+ description P2P-ke-R2 192.168.10.192/30
+ ip address 192.168.10.193 255.255.255.252
+ no shutdown
+ exit
+!
+! Static route menuju LAN Nirkabel lewat R2
+ip route 192.168.10.0 255.255.255.128 192.168.10.194
+!
+end
+write memory</pre><h2>5.2 Konfigurasi R2</h2><pre>! ===== R2 (Router LAN Nirkabel) - KASUS A : DEFAULT ROUTE =====
+enable
+configure terminal
+hostname R2
+no ip domain-lookup
+banner motd #R2 - T09 124140204 Muhammad Faza Prasetyo#
+!
+interface GigabitEthernet0/0
+ description LAN-NIRKABEL 192.168.10.0/25
+ ip address 192.168.10.1 255.255.255.128
+ ip helper-address 192.168.10.130
+ no shutdown
+ exit
+!
+interface GigabitEthernet0/1
+ description P2P-ke-R1 192.168.10.192/30
+ ip address 192.168.10.194 255.255.255.252
+ no shutdown
+ exit
+!
+! Default route: semua tujuan yang tidak dikenal dilempar ke R1
+ip route 0.0.0.0 0.0.0.0 192.168.10.193
+!
+end
+write memory</pre><h2>5.3 Tabel Routing</h2><p>Kode <b>S</b> = static (AD 1), <b>S*</b> = static default route (candidate default).</p><pre>R1#show ip route
+Gateway of last resort is not set
+
+     192.168.10.0/24 is variably subnetted, 5 subnets, 4 masks
+S       192.168.10.0/25 [1/0] via 192.168.10.194
+C       192.168.10.128/26 is directly connected, GigabitEthernet0/0
+L       192.168.10.129/32 is directly connected, GigabitEthernet0/0
+C       192.168.10.192/30 is directly connected, GigabitEthernet0/1
+L       192.168.10.193/32 is directly connected, GigabitEthernet0/1</pre><figure><div class="ph">[Screenshot belum ditambahkan: screenshots/A_route_R1.png]</div><figcaption>Gambar 5. show ip route R1 – Kasus A</figcaption></figure><pre>R2#show ip route
+Gateway of last resort is 192.168.10.193 to network 0.0.0.0
+
+     192.168.10.0/24 is variably subnetted, 4 subnets, 3 masks
+C       192.168.10.0/25 is directly connected, GigabitEthernet0/0
+L       192.168.10.1/32 is directly connected, GigabitEthernet0/0
+C       192.168.10.192/30 is directly connected, GigabitEthernet0/1
+L       192.168.10.194/32 is directly connected, GigabitEthernet0/1
+S*   0.0.0.0/0 [1/0] via 192.168.10.193</pre><figure><div class="ph">[Screenshot belum ditambahkan: screenshots/A_route_R2.png]</div><figcaption>Gambar 6. show ip route R2 – Kasus A</figcaption></figure><h2>5.4 Uji Konektivitas Laptop1 &rarr; PC1</h2><pre>C:\&gt;ping 192.168.10.140
+
+Pinging 192.168.10.140 with 32 bytes of data:
+
+Reply from 192.168.10.140: bytes=32 time&lt;1ms TTL=126
+Reply from 192.168.10.140: bytes=32 time&lt;1ms TTL=126
+Reply from 192.168.10.140: bytes=32 time&lt;1ms TTL=126
+Reply from 192.168.10.140: bytes=32 time&lt;1ms TTL=126
+
+Ping statistics for 192.168.10.140:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss)</pre><figure><div class="ph">[Screenshot belum ditambahkan: screenshots/A_ping.png]</div><figcaption>Gambar 7. Ping Laptop1 ke PC1 – Kasus A</figcaption></figure><pre>C:\&gt;tracert 192.168.10.140
+
+Tracing route to 192.168.10.140 over a maximum of 30 hops:
+
+  1   0 ms      0 ms      0 ms      192.168.10.1
+  2   0 ms      0 ms      0 ms      192.168.10.193
+  3   0 ms      0 ms      0 ms      192.168.10.140
+
+Trace complete.</pre><figure><div class="ph">[Screenshot belum ditambahkan: screenshots/A_tracert.png]</div><figcaption>Gambar 8. Traceroute Laptop1 ke PC1 – Kasus A</figcaption></figure><p><b>Analisis:</b> Ping menghasilkan 4/4 Reply (0% loss). TTL = 126 menunjukkan paket melewati
+2 router (TTL awal 128 dikurangi 2). Tracert memperlihatkan 3 hop: gateway nirkabel R2 (192.168.10.1) &rarr;
+R1 via link P2P (192.168.10.193) &rarr; PC1. Paket berangkat menggunakan default route R2, dan balasan PC1 kembali
+melalui static route R1 ke 192.168.10.0/25.</p><h1 class="pb">6. Kasus B – OSPF Single Area (Area 0)</h1><p>Static route dan default route Kasus A dihapus, lalu kedua router menjalankan OSPF proses 1
+dengan seluruh network dimasukkan ke Area 0 (backbone). Router-ID ditetapkan manual (1.1.1.1 dan 2.2.2.2).
+Interface LAN dijadikan <code>passive-interface</code> agar Hello OSPF tidak dikirim ke client (lebih aman dan
+hemat), namun subnetnya tetap diiklankan.</p><h2>6.1 Konfigurasi R1</h2><pre>! ===== R1 - KASUS B : GANTI STATIC ROUTE DENGAN OSPF AREA 0 =====
+enable
+configure terminal
+! 1) Hapus static route Kasus A
+no ip route 192.168.10.0 255.255.255.128 192.168.10.194
+!
+! 2) Aktifkan OSPF
+router ospf 1
+ router-id 1.1.1.1
+ network 192.168.10.128 0.0.0.63 area 0
+ network 192.168.10.192 0.0.0.3 area 0
+ passive-interface GigabitEthernet0/0
+ exit
+!
+end
+write memory
+!
+! Verifikasi:
+! show ip ospf neighbor
+! show ip route
+! show ip protocols</pre><h2>6.2 Konfigurasi R2</h2><pre>! ===== R2 - KASUS B : GANTI DEFAULT ROUTE DENGAN OSPF AREA 0 =====
+enable
+configure terminal
+! 1) Hapus default route Kasus A
+no ip route 0.0.0.0 0.0.0.0 192.168.10.193
+!
+! 2) Aktifkan OSPF
+router ospf 1
+ router-id 2.2.2.2
+ network 192.168.10.0 0.0.0.127 area 0
+ network 192.168.10.192 0.0.0.3 area 0
+ passive-interface GigabitEthernet0/0
+ exit
+!
+end
+write memory
+!
+! Verifikasi:
+! show ip ospf neighbor
+! show ip route
+! show ip protocols</pre><h2>6.3 Neighbor OSPF</h2><pre>R1#show ip ospf neighbor
+Neighbor ID     Pri   State           Dead Time   Address         Interface
+2.2.2.2           1   FULL/BDR        00:00:35    192.168.10.194  GigabitEthernet0/1</pre><figure><div class="ph">[Screenshot belum ditambahkan: screenshots/B_ospf_neighbor.png]</div><figcaption>Gambar 9. Adjacency OSPF R1–R2 berstatus FULL</figcaption></figure><p>Status <b>FULL</b> menandakan kedua router telah bertukar LSA dan memiliki LSDB yang identik. Peran DR/BDR dapat tertukar bergantung router mana yang aktif lebih dulu.</p><h2>6.4 Tabel Routing</h2><p>Kode <b>O</b> = rute dipelajari via OSPF, [110/2] = AD 110 / cost 2 (cost 1 link Gig P2P + cost 1 interface LAN tujuan; reference bandwidth 100 Mbps).</p><pre>R1#show ip route
+Gateway of last resort is not set
+
+     192.168.10.0/24 is variably subnetted, 5 subnets, 4 masks
+O       192.168.10.0/25 [110/2] via 192.168.10.194, 00:00:41, GigabitEthernet0/1
+C       192.168.10.128/26 is directly connected, GigabitEthernet0/0
+L       192.168.10.129/32 is directly connected, GigabitEthernet0/0
+C       192.168.10.192/30 is directly connected, GigabitEthernet0/1
+L       192.168.10.193/32 is directly connected, GigabitEthernet0/1</pre><figure><div class="ph">[Screenshot belum ditambahkan: screenshots/B_route_R1.png]</div><figcaption>Gambar 10. show ip route R1 – Kasus B</figcaption></figure><pre>R2#show ip route
+Gateway of last resort is not set
+
+     192.168.10.0/24 is variably subnetted, 5 subnets, 4 masks
+C       192.168.10.0/25 is directly connected, GigabitEthernet0/0
+L       192.168.10.1/32 is directly connected, GigabitEthernet0/0
+O       192.168.10.128/26 [110/2] via 192.168.10.193, 00:00:41, GigabitEthernet0/1
+C       192.168.10.192/30 is directly connected, GigabitEthernet0/1
+L       192.168.10.194/32 is directly connected, GigabitEthernet0/1</pre><figure><div class="ph">[Screenshot belum ditambahkan: screenshots/B_route_R2.png]</div><figcaption>Gambar 11. show ip route R2 – Kasus B</figcaption></figure><h2>6.5 Uji Konektivitas Laptop1 &rarr; PC1</h2><pre>C:\&gt;ping 192.168.10.140
+
+Pinging 192.168.10.140 with 32 bytes of data:
+
+Reply from 192.168.10.140: bytes=32 time&lt;1ms TTL=126
+Reply from 192.168.10.140: bytes=32 time&lt;1ms TTL=126
+Reply from 192.168.10.140: bytes=32 time&lt;1ms TTL=126
+Reply from 192.168.10.140: bytes=32 time&lt;1ms TTL=126
+
+Ping statistics for 192.168.10.140:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss)</pre><figure><div class="ph">[Screenshot belum ditambahkan: screenshots/B_ping.png]</div><figcaption>Gambar 12. Ping Laptop1 ke PC1 – Kasus B</figcaption></figure><pre>C:\&gt;tracert 192.168.10.140
+
+Tracing route to 192.168.10.140 over a maximum of 30 hops:
+
+  1   0 ms      0 ms      0 ms      192.168.10.1
+  2   0 ms      0 ms      0 ms      192.168.10.193
+  3   0 ms      0 ms      0 ms      192.168.10.140
+
+Trace complete.</pre><figure><div class="ph">[Screenshot belum ditambahkan: screenshots/B_tracert.png]</div><figcaption>Gambar 13. Traceroute Laptop1 ke PC1 – Kasus B</figcaption></figure><p><b>Analisis:</b> Hasil ping tetap 100% Reply dan jalur tracert identik dengan Kasus A
+(3 hop) karena topologi hanya memiliki satu jalur fisik. Perbedaannya terletak pada <i>cara</i> rute diperoleh:
+pada Kasus B rute ke subnet tujuan dipelajari otomatis dari LSA tetangga, bukan diketik manual. R2 kini memiliki
+rute spesifik 192.168.10.128/26 dan tidak lagi bergantung pada default route.</p><h1 class="pb">7. Analisis Perbandingan Kasus A vs Kasus B</h1>
+<table><tr><th>Aspek</th><th>Kasus A – Static + Default Route</th><th>Kasus B – OSPF Area 0</th></tr>
+<tr><td>Cara memperoleh rute</td><td>Ditulis manual oleh administrator</td><td>Dipelajari otomatis melalui pertukaran LSA</td></tr>
+<tr><td>Administrative Distance</td><td>1 (lebih dipercaya)</td><td>110</td></tr>
+<tr><td>Metrik</td><td>Tidak ada (hanya next-hop)</td><td>Cost berbasis bandwidth (10<sup>8</sup>/BW), di sini cost 2</td></tr>
+<tr><td>Jumlah perintah routing</td><td>1 baris per router</td><td>4–5 baris per router (router-id, network, passive)</td></tr>
+<tr><td>Overhead jaringan &amp; CPU</td><td>Nol – tidak ada paket kontrol</td><td>Hello tiap 10 detik, LSA, kalkulasi SPF (Dijkstra)</td></tr>
+<tr><td>Konvergensi saat perubahan</td><td>Tidak ada; harus diubah manual</td><td>Otomatis (dead interval 40 detik, lalu SPF ulang)</td></tr>
+<tr><td>Skalabilitas</td><td>Buruk – jumlah rute naik seiring jumlah subnet &times; router</td><td>Baik – subnet baru cukup ditambah satu perintah network</td></tr>
+<tr><td>Keamanan</td><td>Tidak mengiklankan apapun</td><td>Perlu passive-interface/autentikasi agar tidak disusupi</td></tr>
+<tr><td>Penambahan subnet baru di R2</td><td>R1 wajib ditambah static route baru</td><td>Otomatis diiklankan ke R1</td></tr>
+<tr><td>Hasil ping / tracert</td><td>100% Reply, 3 hop, TTL 126</td><td>100% Reply, 3 hop, TTL 126</td></tr>
+<tr><td>Cocok untuk</td><td>Jaringan kecil, router stub/cabang dengan satu uplink</td><td>Jaringan menengah–besar, multi-jalur, butuh redundansi</td></tr>
+</table>
+<h2>7.1 Pembahasan</h2>
+<p><b>Kinerja data plane sama.</b> Pada topologi dua router dengan satu link, kedua metode menghasilkan jalur forwarding
+yang persis sama; ping dan traceroute tidak menunjukkan perbedaan hop maupun latensi yang berarti. Perbedaan
+utamanya ada di <i>control plane</i>.</p>
+<p><b>Default route efisien untuk stub.</b> R2 hanya punya satu jalan keluar, sehingga satu baris default route sudah
+mencakup semua tujuan, termasuk subnet yang ditambahkan di sisi R1 kelak. Namun R1 tetap memerlukan static route
+spesifik ke LAN nirkabel, dan setiap penambahan subnet di sisi R2 menuntut perubahan manual di R1 – rawan
+kesalahan ketik (misalnya salah mask/next-hop) yang menyebabkan <i>blackhole</i>.</p>
+<p><b>OSPF unggul dalam otomasi dan skalabilitas.</b> Dengan OSPF, setiap router cukup mengumumkan network miliknya;
+rute ke subnet lain muncul otomatis. Bila nantinya ditambahkan router ketiga atau link cadangan, OSPF akan memilih
+jalur dengan cost terkecil dan melakukan <i>failover</i> otomatis, sesuatu yang tidak dapat dilakukan static route
+biasa (kecuali dengan floating static route). Biayanya berupa trafik Hello/LSA dan konsumsi CPU/memori untuk SPF,
+yang pada skala tugas ini dapat diabaikan.</p>
+<p><b>Catatan saat migrasi.</b> Static route harus dihapus terlebih dulu; jika dibiarkan, rute statis (AD 1) akan selalu
+mengalahkan rute OSPF (AD 110) sehingga OSPF tidak terlihat dipakai di tabel routing.</p>
+<h2>7.2 Kendala dan Solusi</h2>
+<table><tr><th>Kendala</th><th>Penyebab</th><th>Solusi</th></tr>
+<tr><td>Paket ping pertama <i>Request timed out</i></td><td>Proses ARP pada tiap hop belum selesai</td><td>Ulangi ping; hasil berikutnya 100% Reply</td></tr>
+<tr><td>Client wireless mendapat IP 169.254.x.x (APIPA)</td><td>DHCP broadcast tidak menyeberang router / routing belum ada</td><td><code>ip helper-address</code> di R2 G0/0 dan pastikan routing aktif, lalu request DHCP ulang</td></tr>
+<tr><td>Laptop tidak tersambung ke AP</td><td>Modul bawaan Laptop-PT adalah kartu kabel</td><td>Ganti dengan WPC300N, samakan SSID dan WPA2 key</td></tr>
+<tr><td>Neighbor OSPF tidak muncul</td><td>Wildcard / area tidak cocok, atau link P2P dijadikan passive</td><td>Periksa <code>show ip protocols</code>; passive hanya di interface LAN</td></tr></table><h1>8. Kesimpulan</h1>
+<ol>
+<li>Teknik VLSM berhasil membagi blok 192.168.10.0/24 menjadi subnet /25 (LAN nirkabel), /26 (LAN kabel) dan /30
+(link P2P) secara efisien dengan sisa 60 alamat cadangan.</li>
+<li>Seluruh client kabel maupun nirkabel memperoleh IP otomatis dari satu DHCP Server terpusat; client di subnet
+berbeda dilayani melalui DHCP relay (<code>ip helper-address</code>) di R2.</li>
+<li>Kasus A (static + default route) dan Kasus B (OSPF Area 0) sama-sama menghasilkan konektivitas 100% Reply
+dari Laptop nirkabel ke PC kabel dengan jalur 3 hop yang identik.</li>
+<li>Routing statis lebih sederhana dan tanpa overhead, cocok untuk jaringan kecil/stub, sedangkan OSPF lebih
+skalabel, adaptif terhadap perubahan topologi, dan minim konfigurasi manual saat jaringan bertambah besar.</li>
+</ol><h1>Lampiran – Berkas</h1><ul>
+<li><b>KasusA_Static.pkt</b> – simulasi dengan routing statis + default route</li>
+<li><b>KasusB_OSPF.pkt</b> – simulasi dengan OSPF Area 0</li></ul></body></html>

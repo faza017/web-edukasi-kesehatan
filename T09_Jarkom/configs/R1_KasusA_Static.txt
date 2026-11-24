@@ -1,0 +1,25 @@
+! ===== R1 (Router LAN Kabel) - KASUS A : STATIC ROUTE =====
+! Paste di R1 > CLI (setelah "Would you like to enter the initial configuration dialog?" jawab: no)
+enable
+configure terminal
+hostname R1
+no ip domain-lookup
+banner motd #R1 - T09 124140204 Muhammad Faza Prasetyo#
+!
+interface GigabitEthernet0/0
+ description LAN-KABEL 192.168.10.128/26
+ ip address 192.168.10.129 255.255.255.192
+ no shutdown
+ exit
+!
+interface GigabitEthernet0/1
+ description P2P-ke-R2 192.168.10.192/30
+ ip address 192.168.10.193 255.255.255.252
+ no shutdown
+ exit
+!
+! Static route menuju LAN Nirkabel lewat R2
+ip route 192.168.10.0 255.255.255.128 192.168.10.194
+!
+end
+write memory

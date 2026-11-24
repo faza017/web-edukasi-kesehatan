@@ -1,0 +1,22 @@
+! ===== R1 - KASUS B : GANTI STATIC ROUTE DENGAN OSPF AREA 0 =====
+! Dijalankan SETELAH konfigurasi Kasus A (interface sudah terkonfigurasi)
+enable
+configure terminal
+! 1) Hapus static route Kasus A
+no ip route 192.168.10.0 255.255.255.128 192.168.10.194
+!
+! 2) Aktifkan OSPF
+router ospf 1
+ router-id 1.1.1.1
+ network 192.168.10.128 0.0.0.63 area 0
+ network 192.168.10.192 0.0.0.3 area 0
+ passive-interface GigabitEthernet0/0
+ exit
+!
+end
+write memory
+!
+! Verifikasi:
+! show ip ospf neighbor
+! show ip route
+! show ip protocols

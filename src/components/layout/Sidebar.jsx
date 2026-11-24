@@ -39,9 +39,16 @@ export const NAV = {
 export function Brand({ subtitle, className }) {
   return (
     <div className={className}>
-      <div className="flex items-start gap-2 text-white">
-        <span className="mt-0.5 text-lg font-black leading-none">✚</span>
-        <span className="text-base font-bold leading-tight">
+      <div className="flex items-center gap-2.5 text-white">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white p-1 shadow-xs">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/logo.png"
+            alt="Logo Lampung Selatan"
+            className="h-full w-auto object-contain"
+          />
+        </span>
+        <span className="text-sm font-bold leading-tight">
           Posyandu
           <br />
           Banjar Agung

@@ -1,0 +1,22 @@
+! ===== R2 - KASUS B : GANTI DEFAULT ROUTE DENGAN OSPF AREA 0 =====
+! Dijalankan SETELAH konfigurasi Kasus A (interface + helper-address sudah ada)
+enable
+configure terminal
+! 1) Hapus default route Kasus A
+no ip route 0.0.0.0 0.0.0.0 192.168.10.193
+!
+! 2) Aktifkan OSPF
+router ospf 1
+ router-id 2.2.2.2
+ network 192.168.10.0 0.0.0.127 area 0
+ network 192.168.10.192 0.0.0.3 area 0
+ passive-interface GigabitEthernet0/0
+ exit
+!
+end
+write memory
+!
+! Verifikasi:
+! show ip ospf neighbor
+! show ip route
+! show ip protocols

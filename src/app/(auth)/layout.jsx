@@ -61,20 +61,28 @@ export default function AuthLayout({ children }) {
         </svg>
 
         <div className="relative z-10 my-auto">
-          {/* Kartu Logo Putih (Tertulis POSYANDU BANJAR AGUNG) */}
-          <div className=" relative inline-flex items-center overflow-hidden rounded-2xl bg-white px-4 py-2.5 shadow-lg">
+          {/* Kartu Logo Pemda Lampung Selatan & Identitas Posyandu */}
+          <div className="inline-flex items-center gap-3.5 overflow-hidden rounded-2xl bg-white px-4 py-3 shadow-lg">
             <Image
               src="/logo.png"
-              alt="Portal Kesehatan Posyandu Banjar Agung"
-              width={1024}
-              height={682}
+              alt="Logo Pemerintah Kabupaten Lampung Selatan"
+              width={715}
+              height={1024}
               priority
               unoptimized
-              className="h-16 w-auto object-contain sm:h-20"
+              className="h-14 w-auto object-contain sm:h-16"
             />
-            <span className="pointer-events-none absolute right-[6.5%] bottom-[26.5%] left-[37.5%] flex h-[13.5%] items-center justify-center rounded-full bg-[#2b9e66] text-[8px] font-extrabold tracking-[0.14em] text-white sm:text-[9.5px]">
-              POSYANDU BANJAR AGUNG
-            </span>
+            <div className="text-left leading-tight">
+              <span className="block text-[10px] font-bold tracking-wider text-brand-700 uppercase">
+                Pemkab Lampung Selatan
+              </span>
+              <span className="mt-0.5 block text-sm font-extrabold text-brand-900 sm:text-base">
+                Portal Kesehatan
+              </span>
+              <span className="mt-0.5 inline-block rounded-full bg-brand-50 px-2.5 py-0.5 text-[10px] font-bold text-brand-900">
+                Posyandu Banjar Agung
+              </span>
+            </div>
           </div>
 
           {/* Heading Utama */}
