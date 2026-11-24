@@ -7,11 +7,9 @@ import {
   CalendarDays,
   FileText,
   House,
-  Phone,
   Settings,
   X,
 } from "lucide-react";
-import { useData } from "@/services/dataService";
 import { cn } from "@/lib/utils";
 
 export const NAV = {
@@ -64,10 +62,7 @@ export function Brand({ subtitle, className }) {
 /** Sidebar hijau tua lebar 210px (PRD 9 — Layout). */
 export default function Sidebar({ variant = "pengguna", onNavigate, onClose, className }) {
   const pathname = usePathname();
-  const data = useData();
   const nav = NAV[variant];
-  const wa = data?.pengaturan?.kontakWhatsapp;
-  const telp = data?.pengaturan?.kontakTelepon;
 
   return (
     <aside
@@ -119,23 +114,6 @@ export default function Sidebar({ variant = "pengguna", onNavigate, onClose, cla
           );
         })}
       </nav>
-
-      <div className="mx-5 border-t border-white/15 py-5">
-        <p className="text-xs font-semibold">Butuh bantuan?</p>
-        <a
-          href={wa ? `https://wa.me/${wa}` : "#"}
-          target="_blank"
-          rel="noreferrer"
-          className="mt-1.5 block text-[10px] text-white/80 hover:text-white hover:underline"
-        >
-          Hubungi layanan kami
-        </a>
-        {telp && (
-          <p className="mt-1 flex items-center gap-1.5 text-[10px] text-white/60">
-            <Phone size={10} /> {telp}
-          </p>
-        )}
-      </div>
     </aside>
   );
 }
